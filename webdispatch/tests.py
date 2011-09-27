@@ -1,9 +1,47 @@
 import unittest
 
-class TestIt(unittest.TestCase):
+class DispatcherTests(unittest.TestCase):
 
-    def test_it(self):
+    def _getTarget(self):
         from .dispatcher import RegexDispatch
+        return RegexDispatch
+
+    def _makeOne(self, *args, **kwargs):
+        return self._getTarget()(*args, **kwargs)
+
+    def test_empty(self):
+
+        def app(environ, start_response):
+            return environ
+
+        target = self._makeOne([("", app)])
+        environ = {
+            'PATH_INFO': "",
+            'SCRIPT_NAME': "",
+        }
+
+        result = target(environ, None)
+        self.assertEqual(result, 
+            {'PATH_INFO': '', 
+            'SCRIPT_NAME': '', 
+            'wsgiorg.routing_args':([], {})})
+
+    def test_one(self):
+
+        def app(environ, start_response):
+            return environ
+
+        target = self._makeOne([("/{var1}", app)])
+        environ = {
+            'PATH_INFO': "/a",
+            'SCRIPT_NAME': "a",
+        }
+
+        result = target(environ, None)
+        self.assertEqual(result, 
+            {'PATH_INFO': '', 
+            'SCRIPT_NAME': 'a/a', 
+            'wsgiorg.routing_args':([], {'var1': 'a'})})
 
 class PatternToRegexTests(unittest.TestCase):
     def _callFUT(self, *args, **kwargs):
