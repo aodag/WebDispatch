@@ -11,3 +11,11 @@ def pattern_to_regex(pattern):
 class URITemplate(object):
     def __init__(self, tmpl_pattern):
         self.pattern = tmpl_pattern
+        self.regex = re.compile(pattern_to_regex(tmpl_pattern))
+
+    def match(self, path_info):
+        m = self.regex.match(path_info)
+        if m is None:
+            return m
+
+        return m.groupdict()
