@@ -1,13 +1,31 @@
 import re
 import string
 
-vars_pt = re.compile(r"{([^}]+)}")
+operators = {
+    '+': None,
+    '#': None,
+    '.': None,
+    '/': None,
+    ';': None,
+    '?': None,
+    '&': None,
+    # reserved
+    '=': None,
+    ',': None,
+    '!': None,
+    '@': None,
+    '|': None,
+}
+vars_pt = re.compile(r"{(?P<operator>\+#\./;\?&)?(?P<varname>[^}]+)}")
 
 def regex_replacer(m):
-    return "(?P<" + m.group(1) + r">\w+)"
+    d = m.groupdict()
+    op = d.get('operator')
+    if op is None:
+        return "(?P<" + d['varname'] + r">\w+)"
 
 def template_replacer(m):
-    return "${" + m.group(1) + "}"
+    return "${" + m.groupdict()['varname'] + "}"
 
 def pattern_to_regex(pattern):
     return "^" + vars_pt.sub(regex_replacer, pattern) + "$"
