@@ -7,8 +7,8 @@ reseved_characters = [
 ]
 
 operators = {
-    None: (r'[^' + "".join(reseved_characters) + ']+', None),
-    '+': None,
+    None: (r'[^' + "".join(reseved_characters) + ']+?', None),
+    '+': (r'.+?', None),
     '#': None,
     '.': None,
     '/': None,
@@ -22,7 +22,7 @@ operators = {
     '@': None,
     '|': None,
 }
-vars_pt = re.compile(r"{(?P<operator>\+#\./;\?&)?(?P<varname>[a-zA-Z0-9_]+)}")
+vars_pt = re.compile(r"{(?P<operator>\+|#|\.|/|;|\?|&)?(?P<varname>[a-zA-Z0-9_]+)}")
 
 def regex_replacer(m):
     d = m.groupdict()
