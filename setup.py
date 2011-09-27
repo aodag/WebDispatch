@@ -4,4 +4,5 @@ setup(
     name="WebDispatch",
     version="0.0",
     test_suite="webdispatch",
+    license="MIT",
 )
