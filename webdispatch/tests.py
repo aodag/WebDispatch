@@ -48,7 +48,8 @@ class URITemplateTests(unittest.TestCase):
 
         result = target.match(path)
 
-        self.assertEqual(result, dict())
+        self.assertEqual(result.matchdict, dict())
+        self.assertEqual(result.matchlength, 0)
 
     def test_match_no_match(self):
         path = "hoge/{vars}"
@@ -63,11 +64,20 @@ class URITemplateTests(unittest.TestCase):
         target = self._makeOne(path)
         result = target.match("a")
 
-        self.assertEqual(result, dict(var1="a"))
+        self.assertEqual(result.matchdict, dict(var1="a"))
+        self.assertEqual(result.matchlength, 1)
 
     def test_match_match_many(self):
         path = "{var1}/users/{var2}"
         target = self._makeOne(path)
         result = target.match("a/users/egg")
 
-        self.assertEqual(result, dict(var1="a", var2="egg"))
+        self.assertEqual(result.matchdict, dict(var1="a", var2="egg"))
+
+    def test_substitue(self):
+        path = "{var1}/users/{var2}"
+        target = self._makeOne(path)
+        result = target.substitute(dict(var1="x", var2="y"))
+
+        self.assertEqual(result, "x/users/y")
+
