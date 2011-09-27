@@ -58,19 +58,19 @@ class PatternToRegexTests(unittest.TestCase):
         pattern = "{var1}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^(?P<var1>\w+)$")
+        self.assertEqual(result, r"^(?P<var1>[^:,?#\[\]@!$&'\(\)\*\+,;=]+)$")
 
     def test_two_vars(self):
         pattern = "{var1}{var2}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^(?P<var1>\w+)(?P<var2>\w+)$")
+        self.assertEqual(result, r"^(?P<var1>[^:,?#\[\]@!$&'\(\)\*\+,;=]+)(?P<var2>[^:,?#\[\]@!$&'\(\)\*\+,;=]+)$")
 
     def test_vars(self):
         pattern = "/{var1}/{var2}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^/(?P<var1>\w+)/(?P<var2>\w+)$")
+        self.assertEqual(result, r"^/(?P<var1>[^:,?#\[\]@!$&'\(\)\*\+,;=]+)/(?P<var2>[^:,?#\[\]@!$&'\(\)\*\+,;=]+)$")
 
 class URITemplateTests(unittest.TestCase):
     def _getTarget(self):
@@ -92,8 +92,8 @@ class URITemplateTests(unittest.TestCase):
     def test_match_no_match(self):
         path = "hoge/{vars}"
         target = self._makeOne(path)
-
-        result = target.match(path)
+        print(target.regex.pattern)
+        result = target.match("spam/egg")
 
         self.assertEqual(result, None)
 

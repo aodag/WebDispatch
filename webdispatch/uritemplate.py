@@ -1,7 +1,13 @@
 import re
 import string
+reseved_characters = [
+    ":", ",", "?", "#", r"\[", r"\]", "@",
+    "!", "$", "&", "'", r"\(", r"\)",
+    r"\*", r"\+", ",", ";", "=",
+]
 
 operators = {
+    None: (r'[^' + "".join(reseved_characters) + ']+', None),
     '+': None,
     '#': None,
     '.': None,
@@ -16,13 +22,12 @@ operators = {
     '@': None,
     '|': None,
 }
-vars_pt = re.compile(r"{(?P<operator>\+#\./;\?&)?(?P<varname>[^}]+)}")
+vars_pt = re.compile(r"{(?P<operator>\+#\./;\?&)?(?P<varname>[a-zA-Z0-9_]+)}")
 
 def regex_replacer(m):
     d = m.groupdict()
-    op = d.get('operator')
-    if op is None:
-        return "(?P<" + d['varname'] + r">\w+)"
+    op = operators[d.get('operator')]
+    return "(?P<" + d['varname'] + r">" + op[0] + ")"
 
 def template_replacer(m):
     return "${" + m.groupdict()['varname'] + "}"
