@@ -66,10 +66,10 @@ class DispatcherTests(unittest.TestCase):
         environ = self._makeEnv("", "")
 
         result = target(environ, None)
-        self.assertEqual(result, 
-            {'PATH_INFO': '', 
-            'SCRIPT_NAME': '', 
-            'wsgiorg.routing_args':([], {})})
+        self.assertEqual(result['PATH_INFO'], '') 
+        self.assertEqual(result['SCRIPT_NAME'], '')
+        self.assertEqual(result['wsgiorg.routing_args'], ([], {}))
+        self.assertEqual(result['webdispatch.urlmapper'], target.urlmapper)
 
     def test_one(self):
 
@@ -80,10 +80,19 @@ class DispatcherTests(unittest.TestCase):
         environ = self._makeEnv("/a", "a")
 
         result = target(environ, None)
-        self.assertEqual(result, 
-            {'PATH_INFO': '', 
-            'SCRIPT_NAME': 'a/a', 
-            'wsgiorg.routing_args':([], {'var1': 'a'})})
+        self.assertEqual(result['PATH_INFO'], '') 
+        self.assertEqual(result['SCRIPT_NAME'], 'a/a')
+        self.assertEqual(result['wsgiorg.routing_args'], ([], {'var1': 'a'}))
+
+    def test_notfound(self):
+        target = self._makeOne()
+        environ = self._makeEnv("", "")
+        called = []
+        def start_response(status, headers):
+            called.append((status, headers))
+        result = target(environ, start_response)
+        self.assertEqual(result, ["Not found"])
+        
 
 class PatternToRegexTests(unittest.TestCase):
     def _callFUT(self, *args, **kwargs):

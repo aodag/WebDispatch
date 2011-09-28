@@ -27,11 +27,12 @@ class URLMapper(object):
 
 class RegexDispatch(object):
 
-    def __init__(self, applications):
+    def __init__(self, applications=None):
         self.urlmapper = URLMapper()
 
-        for name, pattern, application in applications:
-            self.urlmapper.add(name, pattern, application)
+        if applications is not None:
+            for name, pattern, application in applications:
+                self.urlmapper.add(name, pattern, application)
 
     def __call__(self, environ, start_response):
         script_name = environ.get('SCRIPT_NAME', '')
@@ -49,6 +50,7 @@ class RegexDispatch(object):
         new_named = cur_named.copy()
         new_named.update(named_args)
         environ['wsgiorg.routing_args'] = (new_pos, new_named)
+        environ['webdispatch.urlmapper'] = self.urlmapper
         environ['SCRIPT_NAME'] = script_name + path_info[:match.matchlength]
         environ['PATH_INFO'] = extra_path_info
         return application(environ, start_response)
