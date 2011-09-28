@@ -42,6 +42,13 @@ class URLMapperTests(unittest.TestCase):
 
         self.assertEqual(result, None)
 
+    def test_generate(self):
+        target = self._makeOne()
+        marker = object()
+        target.add('users', "/users/{user_id}", marker)
+        result = target.generate('users', user_id='aodag')
+        self.assertEqual(result, '/users/aodag')
+
 class DispatcherTests(unittest.TestCase):
 
     def _getTarget(self):

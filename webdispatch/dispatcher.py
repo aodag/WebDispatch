@@ -24,6 +24,9 @@ class URLMapper(object):
                 continue
             return match, application
 
+    def generate(self, name, **kwargs):
+        template, _ = self.patterns[name]
+        return template.substitute(kwargs)
 
 class RegexDispatch(object):
 
