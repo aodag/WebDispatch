@@ -9,16 +9,19 @@ class DispatcherTests(unittest.TestCase):
     def _makeOne(self, *args, **kwargs):
         return self._getTarget()(*args, **kwargs)
 
+    def _makeEnv(self, path_info, script_name):
+        return {
+            "PATH_INFO": path_info,
+            "SCRIPT_NAME": script_name,
+        }
+
     def test_empty(self):
 
         def app(environ, start_response):
             return environ
 
         target = self._makeOne([("", app)])
-        environ = {
-            'PATH_INFO': "",
-            'SCRIPT_NAME': "",
-        }
+        environ = self._makeEnv("", "")
 
         result = target(environ, None)
         self.assertEqual(result, 
@@ -32,10 +35,7 @@ class DispatcherTests(unittest.TestCase):
             return environ
 
         target = self._makeOne([("/{var1}", app)])
-        environ = {
-            'PATH_INFO': "/a",
-            'SCRIPT_NAME': "a",
-        }
+        environ = self._makeEnv("/a", "a")
 
         result = target(environ, None)
         self.assertEqual(result, 
