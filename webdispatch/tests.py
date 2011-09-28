@@ -1,5 +1,47 @@
 import unittest
 
+class URLMapperTests(unittest.TestCase):
+    def _getTarget(self):
+        from .dispatcher import URLMapper
+        return URLMapper
+
+    def _makeOne(self, *args, **kwargs):
+        return self._getTarget()(*args, **kwargs)
+
+    def test_empty(self):
+        target = self._makeOne()
+
+        result = target.lookup("")
+
+        self.assertEqual(result, None)
+
+    def test_with_one_uri(self):
+        target = self._makeOne()
+        marker = object()
+        target.add("top", "/", marker)
+        result = target.lookup("/")
+
+        self.assertEqual(result[0].name, "top")
+        self.assertEqual(result[1], marker)
+
+    def test_with_two_uri(self):
+        target = self._makeOne()
+        marker = object()
+        target.add("user", "/user", marker)
+        target.add("top", "/", marker)
+        result = target.lookup("/")
+
+        self.assertEqual(result[0].name, "top")
+        self.assertEqual(result[1], marker)
+
+    def test_with_retain(self):
+        target = self._makeOne()
+        marker = object()
+        target.add("user", "/user*", marker)
+        result = target.lookup("/users")
+
+        self.assertEqual(result, None)
+
 class DispatcherTests(unittest.TestCase):
 
     def _getTarget(self):
@@ -20,7 +62,7 @@ class DispatcherTests(unittest.TestCase):
         def app(environ, start_response):
             return environ
 
-        target = self._makeOne([("", app)])
+        target = self._makeOne([("top", "", app)])
         environ = self._makeEnv("", "")
 
         result = target(environ, None)
@@ -34,7 +76,7 @@ class DispatcherTests(unittest.TestCase):
         def app(environ, start_response):
             return environ
 
-        target = self._makeOne([("/{var1}", app)])
+        target = self._makeOne([("top", "/{var1}", app)])
         environ = self._makeEnv("/a", "a")
 
         result = target(environ, None)
