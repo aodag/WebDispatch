@@ -52,8 +52,8 @@ class URLMapperTests(unittest.TestCase):
 class DispatcherTests(unittest.TestCase):
 
     def _getTarget(self):
-        from .dispatcher import RegexDispatch
-        return RegexDispatch
+        from .dispatcher import Dispatcher
+        return Dispatcher
 
     def _makeOne(self, *args, **kwargs):
         return self._getTarget()(*args, **kwargs)

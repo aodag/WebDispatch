@@ -28,7 +28,7 @@ class URLMapper(object):
         template, _ = self.patterns[name]
         return template.substitute(kwargs)
 
-class RegexDispatch(object):
+class Dispatcher(object):
 
     def __init__(self, applications=None):
         self.urlmapper = URLMapper()
