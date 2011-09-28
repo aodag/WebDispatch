@@ -58,19 +58,19 @@ class PatternToRegexTests(unittest.TestCase):
         pattern = "{var1}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^(?P<var1>[^:,?#\[\]@!$&'\(\)\*\+,;=]+?)$")
+        self.assertEqual(result, r"^(?P<var1>\w+)$")
 
     def test_two_vars(self):
         pattern = "{var1}{var2}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^(?P<var1>[^:,?#\[\]@!$&'\(\)\*\+,;=]+?)(?P<var2>[^:,?#\[\]@!$&'\(\)\*\+,;=]+?)$")
+        self.assertEqual(result, r"^(?P<var1>\w+)(?P<var2>\w+)$")
 
     def test_vars(self):
         pattern = "/{var1}/{var2}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^/(?P<var1>[^:,?#\[\]@!$&'\(\)\*\+,;=]+?)/(?P<var2>[^:,?#\[\]@!$&'\(\)\*\+,;=]+?)$")
+        self.assertEqual(result, r"^/(?P<var1>\w+)/(?P<var2>\w+)$")
 
 class URITemplateTests(unittest.TestCase):
     def _getTarget(self):
@@ -118,10 +118,3 @@ class URITemplateTests(unittest.TestCase):
 
         self.assertEqual(result, "x/users/y")
 
-    def test_match_reserved(self):
-        path = "{+var1}/a/{+var2}/a"
-        target = self._makeOne(path)
-        result = target.match("abcdea/a/a/a")
-
-        self.assertEqual(result.matchdict, dict(var1="abcdea", var2="a"))
-        self.assertEqual(result.matchlength, 12)

@@ -6,5 +6,4 @@ TODO
 - enable to customize application for http error
 - dispatch with various predications (e.g. Content-Type, request method, urlvars etc)
 - subrouting
-- support uritemplate(http://tools.ietf.org/html/draft-gregorio-uritemplate-07)
 - support positional (non named) arguments
