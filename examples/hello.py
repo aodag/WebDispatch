@@ -1,14 +1,19 @@
+from webob import Request
 from webob.dec import wsgify
 from webdispatch import Dispatcher
+from webdispatch.mixins import URLMapperMixin
+
+class MyRequest(Request, URLMapperMixin):
+    pass
 
 app = Dispatcher()
 
-@wsgify
+@wsgify(RequestClass=MyRequest)
 def index(request):
-    url = request.environ['webdispatch.urlmapper'].generate("hello")
+    url = request.generate_url("hello")
     return '<a href="%s">Hello</a>' % (url,)
 
-@wsgify
+@wsgify(RequestClass=MyRequest)
 def hello(request):
     return "Hello"
 
