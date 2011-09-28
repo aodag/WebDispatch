@@ -54,6 +54,18 @@ class PatternToRegexTests(unittest.TestCase):
 
         self.assertEqual(result, "^$")
 
+    def test_open_path(self):
+        pattern = "hoge*"
+        result = self._callFUT(pattern)
+
+        self.assertEqual(result, "^hoge")
+
+    def test_close_path(self):
+        pattern = "hoge"
+        result = self._callFUT(pattern)
+
+        self.assertEqual(result, "^hoge$")
+
     def test_one_var(self):
         pattern = "{var1}"
         result = self._callFUT(pattern)

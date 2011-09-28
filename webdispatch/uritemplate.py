@@ -10,7 +10,12 @@ def template_replacer(m):
     return "${" + m.groupdict()['varname'] + "}"
 
 def pattern_to_regex(pattern):
-    return "^" + vars_pt.sub(regex_replacer, pattern) + "$"
+    if len(pattern) > 0 and pattern[-1] == "*":
+        pattern = pattern[:-1]
+        end = ""
+    else:
+        end = "$"
+    return "^" + vars_pt.sub(regex_replacer, pattern) + end
 
 def pattern_to_template(pattern):
     return vars_pt.sub(template_replacer, pattern)
