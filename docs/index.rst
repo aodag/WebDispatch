@@ -6,6 +6,9 @@
 Welcome to WebDispatch's documentation!
 =======================================
 
+.. literalinclude:: ../examples/hello.py
+   :linenos:
+
 Contents:
 
 .. toctree::
