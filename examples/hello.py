@@ -12,8 +12,8 @@ def index(request):
 def hello(request):
     return "Hello"
 
-app.urlmapper.add('home', '/', index)
-app.urlmapper.add('hello', '/hello', hello)
+app.add_url('home', '/', index)
+app.add_url('hello', '/hello', hello)
 
 from wsgiref.simple_server import make_server
 

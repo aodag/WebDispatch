@@ -37,6 +37,9 @@ class Dispatcher(object):
             for name, pattern, application in applications:
                 self.urlmapper.add(name, pattern, application)
 
+    def add_url(self, name, pattern, application):
+        self.urlmapper.add(name, pattern, application)
+        
     def __call__(self, environ, start_response):
         script_name = environ.get('SCRIPT_NAME', '')
         path_info = environ.get('PATH_INFO', '')

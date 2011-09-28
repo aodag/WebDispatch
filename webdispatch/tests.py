@@ -101,6 +101,13 @@ class DispatcherTests(unittest.TestCase):
         self.assertEqual(result, ["Not found"])
         
 
+    def test_add_url(self):
+        target = self._makeOne()
+        marker = object()
+        target.add_url('top', '/', marker)
+        self.assertEqual(target.urlmapper.patterns['top'][0].pattern, '/')
+        self.assertEqual(target.urlmapper.patterns['top'][1], marker)
+
 class PatternToRegexTests(unittest.TestCase):
     def _callFUT(self, *args, **kwargs):
         from .uritemplate import pattern_to_regex
