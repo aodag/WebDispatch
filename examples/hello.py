@@ -10,17 +10,17 @@ app = Dispatcher()
 
 @wsgify(RequestClass=MyRequest)
 def index(request):
-    url = request.generate_url("hello")
+    url = request.generate_url("hello", xname="webdispatch")
     return '<a href="%s">Hello</a>' % (url,)
 
 @wsgify(RequestClass=MyRequest)
 def hello(request):
-    return "Hello"
+    return "Hello %s" % request.urlvars['xname']
 
 app.add_url('home', '/', index)
-app.add_url('hello', '/hello', hello)
+app.add_url('hello', '/hello/{xname}', hello)
 
 from wsgiref.simple_server import make_server
 
-httpd = make_server('', 8080, app)
+httpd = make_server('0.0.0.0', 8080, app)
 httpd.serve_forever()
