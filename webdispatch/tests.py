@@ -43,6 +43,15 @@ class URLMapperTests(unittest.TestCase):
 
         self.assertEqual(result, None)
 
+    def test_generate(self):
+        target = self._makeOne()
+        marker = object()
+        target.add("user", "/user", marker)
+
+        result = target.generate("user")
+        self.assertEqual(result, '/user')
+
+
 class URLGeneratorTests(unittest.TestCase):
     def _getTarget(self):
         from .dispatcher import URLGenerator
@@ -52,12 +61,15 @@ class URLGeneratorTests(unittest.TestCase):
         return self._getTarget()(*args, **kwargs)
 
     def test_generate(self):
-        environ = {'SCRIPT_NAME': '/test_app/'}
+        environ = {'SCRIPT_NAME': '/test_app/', 
+            'wsgi.url_scheme': 'http',
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '80'}
         dummy_mapper = Mock('urlmapper')
         dummy_mapper.generate.mock_returns = 'generated_url'
         target = self._makeOne(environ, dummy_mapper)
         result = target.generate('users', user_id='aodag')
-        self.assertEqual(result, '/test_app/generated_url')
+        self.assertEqual(result, 'http://localhost/test_app/generated_url')
 
 class DispatcherTests(unittest.TestCase):
 

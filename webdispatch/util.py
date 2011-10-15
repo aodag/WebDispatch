@@ -7,14 +7,14 @@ try:
 except ImportError:
     from urllib.parse import urlunparse
 
-def application_url(environ):
+def application_url(environ, path):
     """
     >>> env = {'wsgi.url_scheme': 'https',
     ...  'HTTP_HOST': 'example.com',
     ...  'SCRIPT_NAME': '/a',
     ...  'PATH_INFO': '/b'}
-    >>> application_url(env)
-    'https://example.com/a/b'
+    >>> application_url(env, '/c')
+    'https://example.com/a/c'
     """
 
     scheme = environ['wsgi.url_scheme']
@@ -33,7 +33,5 @@ def application_url(environ):
             else:
                 hsot = server_name + ":" + port
     script_name = quote(environ.get('SCRIPT_NAME', ''))
-    path_info = quote(environ.get('PATH_INFO', ''))
     query_string = environ.get('QUERY_STRING')
-    # return scheme + "://" + host + script_name + path_info + ('?' + query_string) if query_string else ''
-    return urlunparse((scheme, host, script_name + path_info, '', query_string, ''))
+    return urlunparse((scheme, host, script_name + path, '', query_string, ''))
