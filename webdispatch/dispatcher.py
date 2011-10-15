@@ -24,9 +24,9 @@ class URLMapper(object):
                 continue
             return match, application
 
-        def generate(self, name, **kwargs):
-            template, _ = self.patterns[name]
-            return template.substitute(kwargs)
+    def generate(self, name, **kwargs):
+        template, _ = self.patterns[name]
+        return template.substitute(kwargs)
 
 class URLGenerator(object):
     def __init__(self, environ, urlmapper):

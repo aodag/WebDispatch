@@ -20,7 +20,8 @@ def hello(request):
 app.add_url('home', '/', index)
 app.add_url('hello', '/hello/{xname}', hello)
 
-from wsgiref.simple_server import make_server
+if __name__ == '__main__':
+    from wsgiref.simple_server import make_server
 
-httpd = make_server('0.0.0.0', 8080, app)
-httpd.serve_forever()
+    httpd = make_server('0.0.0.0', 8080, app)
+    httpd.serve_forever()
