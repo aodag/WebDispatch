@@ -9,7 +9,7 @@ except ImportError:
 
 setup(
     name="WebDispatch",
-    version="1.0a2",
+    version="0.0",
     test_suite="webdispatch",
     license="MIT",
     install_requires=requires,
