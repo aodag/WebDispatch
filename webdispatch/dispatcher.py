@@ -42,16 +42,25 @@ class URLGenerator(object):
 
 class Dispatcher(object):
 
-    def __init__(self, applications=None):
-        self.urlmapper = URLMapper()
+    def __init__(self, applications=None, urlmapper=None, prefix=''):
+        if urlmapper is None:
+            self.urlmapper = URLMapper()
+        else:
+            self.urlmapper = urlmapper
+
+        self.prefix = prefix
 
         if applications is not None:
             for name, pattern, application in applications:
                 self.urlmapper.add(name, pattern, application)
 
     def add_url(self, name, pattern, application):
-        self.urlmapper.add(name, pattern, application)
-        
+        self.urlmapper.add(name, self.prefix + pattern, application)
+
+    def add_subroute(self, pattern):
+        return Dispatcher(urlmapper=self.urlmapper,
+            prefix=self.prefix + pattern)
+
     def __call__(self, environ, start_response):
         script_name = environ.get('SCRIPT_NAME', '')
         path_info = environ.get('PATH_INFO', '')
