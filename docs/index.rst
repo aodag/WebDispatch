@@ -14,6 +14,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   basicusage
+   tipsandtricks
+
+
 Indices and tables
 ==================
 

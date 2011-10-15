@@ -24,9 +24,21 @@ class URLMapper(object):
                 continue
             return match, application
 
+        def generate(self, name, **kwargs):
+            template, _ = self.patterns[name]
+            return template.substitute(kwargs)
+
+class URLGenerator(object):
+    def __init__(self, environ, urlmapper):
+        self.environ = environ
+        self.urlmapper = urlmapper
+
+    @property
+    def script_name(self):
+        return self.environ.get('SCRIPT_NAME', '')
+
     def generate(self, name, **kwargs):
-        template, _ = self.patterns[name]
-        return template.substitute(kwargs)
+        return self.script_name +  self.urlmapper.generate(name, **kwargs)
 
 class Dispatcher(object):
 
@@ -57,6 +69,7 @@ class Dispatcher(object):
         new_named.update(named_args)
         environ['wsgiorg.routing_args'] = (new_pos, new_named)
         environ['webdispatch.urlmapper'] = self.urlmapper
+        environ['webdispatch.urlgenerator'] = URLGenerator(environ, self.urlmapper)
         environ['SCRIPT_NAME'] = script_name + path_info[:match.matchlength]
         environ['PATH_INFO'] = extra_path_info
         return application(environ, start_response)

@@ -1,4 +1,5 @@
 import unittest
+from minimock import Mock
 
 class URLMapperTests(unittest.TestCase):
     def _getTarget(self):
@@ -42,12 +43,21 @@ class URLMapperTests(unittest.TestCase):
 
         self.assertEqual(result, None)
 
+class URLGeneratorTests(unittest.TestCase):
+    def _getTarget(self):
+        from .dispatcher import URLGenerator
+        return URLGenerator
+
+    def _makeOne(self, *args, **kwargs):
+        return self._getTarget()(*args, **kwargs)
+
     def test_generate(self):
-        target = self._makeOne()
-        marker = object()
-        target.add('users', "/users/{user_id}", marker)
+        environ = {'SCRIPT_NAME': '/test_app/'}
+        dummy_mapper = Mock('urlmapper')
+        dummy_mapper.generate.mock_returns = 'generated_url'
+        target = self._makeOne(environ, dummy_mapper)
         result = target.generate('users', user_id='aodag')
-        self.assertEqual(result, '/users/aodag')
+        self.assertEqual(result, '/test_app/generated_url')
 
 class DispatcherTests(unittest.TestCase):
 
