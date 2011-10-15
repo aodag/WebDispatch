@@ -1,5 +1,4 @@
 import unittest
-from minimock import Mock
 
 class URLMapperTests(unittest.TestCase):
     def _getTarget(self):
@@ -65,8 +64,11 @@ class URLGeneratorTests(unittest.TestCase):
             'wsgi.url_scheme': 'http',
             'SERVER_NAME': 'localhost',
             'SERVER_PORT': '80'}
-        dummy_mapper = Mock('urlmapper')
-        dummy_mapper.generate.mock_returns = 'generated_url'
+        class DummyMapper(object):
+            def generate(self, *args, **kwargs):
+                return 'generated_url'
+
+        dummy_mapper = DummyMapper()
         target = self._makeOne(environ, dummy_mapper)
         result = target.generate('users', user_id='aodag')
         self.assertEqual(result, 'http://localhost/test_app/generated_url')
