@@ -5,3 +5,10 @@
 .*.swp
 .tox
 .coverage
+Scripts
+Lib
+Include
+man
+src
+*.tar.gz
+*.zip

@@ -1,7 +1,6 @@
 Jinja2==2.6
 Pygments==1.4
 Sphinx==1.0.8
--e git+git@github.com:aodag/WebDispatch@6b2e4e4431dbffa56f77ef9732f5de8b607f4028#egg=WebDispatch-dev
 argparse==1.2.1
 coverage==3.5.1
 distribute==0.6.19
