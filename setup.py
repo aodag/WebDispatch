@@ -16,7 +16,7 @@ def _read(name):
     try:
         return open(os.path.join(here, name)).read()
     except:
-        return None
+        return ""
 
 readme = _read("README.txt")
 changes = _read("CHANGES.txt")
