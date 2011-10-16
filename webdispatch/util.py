@@ -1,11 +1,4 @@
-try:
-    from urllib import quote
-except ImportError:
-    from urllib.parse import quote
-try:
-    from urlparse import urlunparse
-except ImportError:
-    from urllib.parse import urlunparse
+from ._compat import quote, urlunparse
 
 def application_url(environ, path):
     """
