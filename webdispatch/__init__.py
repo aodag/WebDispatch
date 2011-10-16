@@ -1,2 +1,2 @@
 #
-from .dispatcher import Dispatcher
+from .dispatcher import URLDispatcher

@@ -43,7 +43,7 @@ class URLGenerator(object):
 
         return application_url(self.environ, path)
 
-class Dispatcher(object):
+class URLDispatcher(object):
 
     def __init__(self, applications=None, urlmapper=None, prefix=''):
         if urlmapper is None:
@@ -61,7 +61,7 @@ class Dispatcher(object):
         self.urlmapper.add(name, self.prefix + pattern, application)
 
     def add_subroute(self, pattern):
-        return Dispatcher(urlmapper=self.urlmapper,
+        return URLDispatcher(urlmapper=self.urlmapper,
             prefix=self.prefix + pattern)
 
     def __call__(self, environ, start_response):

@@ -1,12 +1,12 @@
 from webob import Request
 from webob.dec import wsgify
-from webdispatch import Dispatcher
+from webdispatch import URLDispatcher
 from webdispatch.mixins import URLMapperMixin
 
 class MyRequest(Request, URLMapperMixin):
     pass
 
-app = Dispatcher()
+app = URLDispatcher()
 
 @wsgify(RequestClass=MyRequest)
 def index(request):

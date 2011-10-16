@@ -73,11 +73,11 @@ class URLGeneratorTests(unittest.TestCase):
         result = target.generate('users', user_id='aodag')
         self.assertEqual(result, 'http://localhost/test_app/generated_url')
 
-class DispatcherTests(unittest.TestCase):
+class URLDispatcherTests(unittest.TestCase):
 
     def _getTarget(self):
-        from .dispatcher import Dispatcher
-        return Dispatcher
+        from .dispatcher import URLDispatcher
+        return URLDispatcher
 
     def _makeOne(self, *args, **kwargs):
         return self._getTarget()(*args, **kwargs)

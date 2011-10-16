@@ -1,4 +1,4 @@
-from webdispatch import Dispatcher
+from webdispatch import URLDispatcher
 from webob.dec import wsgify
 
 @wsgify
@@ -9,7 +9,7 @@ def handler(request):
 def gen_handler(request):
     return request.environ['webdispatch.urlgenerator'].generate('sub_hello')
 
-app = Dispatcher()
+app = URLDispatcher()
 app.add_url('top', '/', handler)
 app.add_url('generating', '/gen', gen_handler)
 app.add_url('sub_prefix', '/sub', handler)

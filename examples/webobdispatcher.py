@@ -1,4 +1,4 @@
-from webdispatch import Dispatcher
+from webdispatch import URLDispatcher
 from webob import Request
 from webob.dec import wsgify
 from webdispatch.mixins import URLMapperMixin
@@ -6,7 +6,7 @@ from webdispatch.mixins import URLMapperMixin
 class MyRequest(Request, URLMapperMixin):
     pass
 
-class WebObDispatcher(Dispatcher):
+class WebObDispatcher(URLDispatcher):
     def add_url(self, name, pattern, view):
         application = wsgify(view, RequestClass=MyRequest)
         super(WebObDispatcher, self).add_url(name, pattern, application)
