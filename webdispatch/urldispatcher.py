@@ -7,6 +7,9 @@ except ImportError:
     from ordereddict import OrderedDict
 
 class URLMapper(object):
+    """ find application matched url pattern.
+    """
+
     def __init__(self):
         self.patterns = OrderedDict()
 
@@ -30,6 +33,9 @@ class URLMapper(object):
         return template.substitute(kwargs)
 
 class URLGenerator(object):
+    """ generate url form parameters and url patterns.
+    """
+
     def __init__(self, environ, urlmapper):
         self.environ = environ
         self.urlmapper = urlmapper
@@ -45,6 +51,8 @@ class URLGenerator(object):
         return self.application_uri + path
 
 class URLDispatcher(object):
+    """ dispatch applications with url patterns.
+    """
 
     def __init__(self, applications=None, urlmapper=None, prefix=''):
         if urlmapper is None:

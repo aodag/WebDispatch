@@ -1,6 +1,22 @@
 Tips and Tricks
 =============================
 
+integrate with WebOb
+------------------------------------
+
+WebOb has wsgify decorator that makes callable wsgi application.
+
+WebDispatch provides :class:`webdispatch.mixins.URLMapperMixin` to add generate_url method to Request class.
+
+use generator mixin::
+
+  class MyRequest(Request, URLMapperMixin):
+      pass
+
+  @wsgify(RequestClass=MyRequest)
+  def view(request):
+      return "Hello"
+
 generate absolute url on backend of reverse proxy.
 -----------------------------------------------------------------
 

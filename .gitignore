@@ -12,3 +12,4 @@ man
 src
 *.tar.gz
 *.zip
+build

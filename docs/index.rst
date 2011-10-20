@@ -16,6 +16,7 @@ Contents:
 
    basicusage
    tipsandtricks
+   reference
 
 
 Indices and tables

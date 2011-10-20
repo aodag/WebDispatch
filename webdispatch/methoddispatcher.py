@@ -1,8 +1,9 @@
 
 class MethodDispatcher(object):
+    """ dispatch applications with request method.
+    """
+
     def __init__(self, **kwargs):
-        """
-        """
 
         self.applications = kwargs.copy()
 
