@@ -2,7 +2,7 @@ import unittest
 
 class URLMapperTests(unittest.TestCase):
     def _getTarget(self):
-        from .dispatcher import URLMapper
+        from .urldispatcher import URLMapper
         return URLMapper
 
     def _makeOne(self, *args, **kwargs):
@@ -53,7 +53,7 @@ class URLMapperTests(unittest.TestCase):
 
 class URLGeneratorTests(unittest.TestCase):
     def _getTarget(self):
-        from .dispatcher import URLGenerator
+        from .urldispatcher import URLGenerator
         return URLGenerator
 
     def _makeOne(self, *args, **kwargs):
@@ -76,7 +76,7 @@ class URLGeneratorTests(unittest.TestCase):
 class URLDispatcherTests(unittest.TestCase):
 
     def _getTarget(self):
-        from .dispatcher import URLDispatcher
+        from .urldispatcher import URLDispatcher
         return URLDispatcher
 
     def _makeOne(self, *args, **kwargs):
