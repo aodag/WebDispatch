@@ -27,7 +27,7 @@ setup(
     author_email="aodagx@gmail.com",
     description="dispatch request on wsgi application.",
     long_description=readme + "\n" + changes,
-    version="0.0",
+    version="1.0a3",
     test_suite="webdispatch",
     license="MIT",
     install_requires=requires,
