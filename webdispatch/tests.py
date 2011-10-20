@@ -83,10 +83,13 @@ class URLDispatcherTests(unittest.TestCase):
         return self._getTarget()(*args, **kwargs)
 
     def _makeEnv(self, path_info, script_name):
-        return {
+        from wsgiref.util import setup_testing_defaults
+        environ = {
             "PATH_INFO": path_info,
             "SCRIPT_NAME": script_name,
         }
+        setup_testing_defaults(environ)
+        return environ
 
     def test_empty(self):
 

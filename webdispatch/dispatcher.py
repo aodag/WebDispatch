@@ -1,5 +1,5 @@
 from .uritemplate import URITemplate
-from .util import application_url
+from .util import application_uri
 
 try:
     from collections import OrderedDict
@@ -33,6 +33,7 @@ class URLGenerator(object):
     def __init__(self, environ, urlmapper):
         self.environ = environ
         self.urlmapper = urlmapper
+        self.application_uri = application_uri(environ)
 
     @property
     def script_name(self):
@@ -41,7 +42,7 @@ class URLGenerator(object):
     def generate(self, name, **kwargs):
         path = self.urlmapper.generate(name, **kwargs)
 
-        return application_url(self.environ, path)
+        return self.application_uri + path
 
 class URLDispatcher(object):
 
