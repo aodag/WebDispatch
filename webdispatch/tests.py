@@ -222,3 +222,37 @@ class URITemplateTests(unittest.TestCase):
 
         self.assertEqual(result, "x/users/y")
 
+class MethodDispatcherTests(unittest.TestCase):
+    def _getTarget(self):
+        from .methoddispatcher import MethodDispatcher
+        return MethodDispatcher
+
+    def _makeOne(self, *args, **kwargs):
+        return self._getTarget()(*args, **kwargs)
+
+    def _setup_environ(self, **kwargs):
+        environ = {}
+        from wsgiref.util import setup_testing_defaults
+        setup_testing_defaults(environ)
+        environ.update(kwargs)
+        return environ
+
+    def test_it(self):
+        app = self._makeOne(get=lambda environ, start_response: ["get"])
+        environ = self._setup_environ()
+        start_response = DummyStartResponse()
+        result = app(environ, start_response)
+        self.assertEqual(result, ["get"])
+
+    def test_not_allowed(self):
+        app = self._makeOne(get=lambda environ, start_response: ["get"])
+        environ = self._setup_environ(REQUEST_METHOD='POST')
+        start_response = DummyStartResponse()
+        result = app(environ, start_response)
+        self.assertEqual(result, ["Method Not Allowed"])
+        self.assertEqual(start_response.status, '405 Method Not Allowed')
+
+class DummyStartResponse(object):
+    def __call__(self, status, headers):
+        self.status = status
+        self.headers = headers
