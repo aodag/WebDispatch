@@ -41,10 +41,6 @@ class URLGenerator(object):
         self.urlmapper = urlmapper
         self.application_uri = application_uri(environ)
 
-    @property
-    def script_name(self):
-        return self.environ.get('SCRIPT_NAME', '')
-
     def generate(self, name, **kwargs):
         path = self.urlmapper.generate(name, **kwargs)
 

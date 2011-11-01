@@ -91,6 +91,18 @@ class URLDispatcherTests(unittest.TestCase):
         setup_testing_defaults(environ)
         return environ
 
+    def test_make(self):
+        target = self._getTarget()
+        dummy = object()
+        result = target(urlmapper=dummy)
+        self.assertEqual(result.urlmapper, dummy)
+
+    def test_add_subroute(self):
+        target = self._makeOne(prefix='/root')
+        result = target.add_subroute('/sub')
+
+        self.assertEqual(result.urlmapper, target.urlmapper)
+        self.assertEqual(result.prefix, '/root/sub')
     def test_empty(self):
 
         def app(environ, start_response):
