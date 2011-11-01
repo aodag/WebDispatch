@@ -1,9 +1,0 @@
-TODO
-===========
-
-- generate url from pattern and urlargs
-- default urlvars
-- enable to customize application for http error
-- dispatch with various predications (e.g. Content-Type, request method, urlvars etc)
-- subrouting
-- support positional (non named) arguments
