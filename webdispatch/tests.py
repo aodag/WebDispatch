@@ -298,6 +298,30 @@ class ActionDispatcherTests(unittest.TestCase):
         self.assertEqual(start_response.status, '404 Not Found')
         self.assertEqual(result, ["Not Found http://127.0.0.1/"])
 
+class URLMapperMixinTests(unittest.TestCase):
+    def _getTarget(self):
+        from .mixins import URLMapperMixin
+        return URLMapperMixin
+
+    def _makeOne(self, *args, **kwargs):
+        return self._getTarget()(*args, **kwargs)
+
+    def test_generate_url(self):
+        target = self._makeOne()
+        dummy_generator = DummyURLGenerator('generated')
+        target.environ = {'webdispatch.urlgenerator': dummy_generator}
+        result = target.generate_url('a', v1='1', v2='2')
+
+        self.assertEqual(result, 'generated')
+        self.assertEqual(dummy_generator.called, ('generate', 'a', {'v1': '1', 'v2': '2'}))
+
+class DummyURLGenerator(object):
+    def __init__(self, url):
+        self.url = url
+
+    def generate(self, name, **kwargs):
+        self.called = ('generate', name, kwargs)
+        return self.url
 
 class DummyStartResponse(object):
     def __call__(self, status, headers):
