@@ -33,7 +33,7 @@ class MethodDispatcher(DispatchBase):
 
 class ActionDispatcher(DispatchBase):
     def __init__(self, action_var_name='action'):
-        super(ActionDispatcher, self).__init__(self)
+        super(ActionDispatcher, self).__init__()
         self.action_var_name = action_var_name
 
     def detect_view_name(self, environ):

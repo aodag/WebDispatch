@@ -252,6 +252,41 @@ class MethodDispatcherTests(unittest.TestCase):
         self.assertEqual(result, ["Method Not Allowed"])
         self.assertEqual(start_response.status, '405 Method Not Allowed')
 
+class ActionDispatcherTests(unittest.TestCase):
+    def _getTarget(self):
+        from .methoddispatcher import ActionDispatcher
+        return ActionDispatcher
+
+    def _makeOne(self, *args, **kwargs):
+        return self._getTarget()(*args, **kwargs)
+
+    def _setup_environ(self, **kwargs):
+        environ = {}
+        from wsgiref.util import setup_testing_defaults
+        setup_testing_defaults(environ)
+        environ.update(kwargs)
+        return environ
+
+    def test_it(self):
+        app = self._makeOne()
+        app.register_app('test_app', lambda environ, start_response: ['got action'])
+        routing_args = [(), {'action': 'test_app'}]
+        environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
+        start_response = DummyStartResponse()
+        result = app(environ, start_response)
+        self.assertEqual(result, ["got action"])
+
+    def test_not_found(self):
+        app = self._makeOne()
+        app.register_app('test_app', lambda environ, start_response: ['got action'])
+        routing_args = [(), {'action': 'no_app'}]
+        environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
+        start_response = DummyStartResponse()
+        result = app(environ, start_response)
+        self.assertEqual(start_response.status, '404 Not Found')
+        self.assertEqual(result, ["Not Found http://127.0.0.1/"])
+
+
 class DummyStartResponse(object):
     def __call__(self, status, headers):
         self.status = status
