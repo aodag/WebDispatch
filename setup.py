@@ -4,7 +4,7 @@ requires = []
 import os
 
 try:
-    import collections.OrderedDict
+    from collections import OrderedDict
 except ImportError:
     requires.append('ordereddict')
 
