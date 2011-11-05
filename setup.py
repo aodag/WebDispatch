@@ -27,11 +27,12 @@ setup(
     author_email="aodagx@gmail.com",
     description="dispatch request on wsgi application.",
     long_description=readme + "\n" + changes,
-    version="1.0b1",
+    version="1.0b2",
     test_suite="webdispatch",
     license="MIT",
     install_requires=requires,
     url='http://github.com/aodag/WebDispatch',
+    packages=find_packages(),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
