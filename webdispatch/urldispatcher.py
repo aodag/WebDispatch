@@ -1,5 +1,6 @@
 from .uritemplate import URITemplate
 from .util import application_uri
+from .base import DispatchBase
 
 try:
     from collections import OrderedDict
@@ -13,23 +14,22 @@ class URLMapper(object):
     def __init__(self):
         self.patterns = OrderedDict()
 
-    def add(self, name, pattern, application):
-        self.patterns[name] = (URITemplate(pattern), application)
+    def add(self, name, pattern):
+        self.patterns[name] = URITemplate(pattern)
 
     def lookup(self, path_info):
         for name, pattern in self.patterns.items():
-            regex, application = pattern
-            match = regex.match(path_info)
+            match = pattern.match(path_info)
             if match is None:
                 continue
             match.name = name
             extra_path_info = path_info[match.matchlength:]
             if extra_path_info and not extra_path_info.startswith('/'):
                 continue
-            return match, application
+            return match
 
     def generate(self, name, **kwargs):
-        template, _ = self.patterns[name]
+        template = self.patterns[name]
         return template.substitute(kwargs)
 
 class URLGenerator(object):
@@ -46,11 +46,12 @@ class URLGenerator(object):
 
         return self.application_uri + path
 
-class URLDispatcher(object):
+class URLDispatcher(DispatchBase):
     """ dispatch applications with url patterns.
     """
 
-    def __init__(self, applications=None, urlmapper=None, prefix=''):
+    def __init__(self, urlmapper=None, prefix=''):
+        super(URLDispatcher, self).__init__()
         if urlmapper is None:
             self.urlmapper = URLMapper()
         else:
@@ -58,24 +59,20 @@ class URLDispatcher(object):
 
         self.prefix = prefix
 
-        if applications is not None:
-            for name, pattern, application in applications:
-                self.urlmapper.add(name, pattern, application)
-
     def add_url(self, name, pattern, application):
-        self.urlmapper.add(name, self.prefix + pattern, application)
+        self.urlmapper.add(name, self.prefix + pattern)
+        self.register_app(name, application)
 
     def add_subroute(self, pattern):
         return URLDispatcher(urlmapper=self.urlmapper,
             prefix=self.prefix + pattern)
 
-    def __call__(self, environ, start_response):
+    def detect_view_name(self, environ):
         script_name = environ.get('SCRIPT_NAME', '')
         path_info = environ.get('PATH_INFO', '')
-        matches = self.urlmapper.lookup(path_info)
-        if matches is None:
-            return self.not_found(environ, start_response)
-        match, application = matches
+        match = self.urlmapper.lookup(path_info)
+        if match is None:
+            return None
 
         extra_path_info = path_info[match.matchlength:]
         pos_args = []
@@ -89,8 +86,9 @@ class URLDispatcher(object):
         environ['webdispatch.urlgenerator'] = URLGenerator(environ, self.urlmapper)
         environ['SCRIPT_NAME'] = script_name + path_info[:match.matchlength]
         environ['PATH_INFO'] = extra_path_info
-        return application(environ, start_response)
 
-    def not_found(self, environ, start_response):
+        return match.name
+
+    def on_view_not_found(self, environ, start_response):
         start_response('404 Not Found', [('Content-type', 'text/plain')])
         return ['Not found']

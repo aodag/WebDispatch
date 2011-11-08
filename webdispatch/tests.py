@@ -18,26 +18,24 @@ class URLMapperTests(unittest.TestCase):
     def test_with_one_uri(self):
         target = self._makeOne()
         marker = object()
-        target.add("top", "/", marker)
+        target.add("top", "/")
         result = target.lookup("/")
 
-        self.assertEqual(result[0].name, "top")
-        self.assertEqual(result[1], marker)
+        self.assertEqual(result.name, "top")
 
     def test_with_two_uri(self):
         target = self._makeOne()
         marker = object()
-        target.add("user", "/user", marker)
-        target.add("top", "/", marker)
+        target.add("user", "/user")
+        target.add("top", "/")
         result = target.lookup("/")
 
-        self.assertEqual(result[0].name, "top")
-        self.assertEqual(result[1], marker)
+        self.assertEqual(result.name, "top")
 
     def test_with_retain(self):
         target = self._makeOne()
         marker = object()
-        target.add("user", "/user*", marker)
+        target.add("user", "/user*")
         result = target.lookup("/users")
 
         self.assertEqual(result, None)
@@ -45,7 +43,7 @@ class URLMapperTests(unittest.TestCase):
     def test_generate(self):
         target = self._makeOne()
         marker = object()
-        target.add("user", "/user", marker)
+        target.add("user", "/user")
 
         result = target.generate("user")
         self.assertEqual(result, '/user')
@@ -108,7 +106,8 @@ class URLDispatcherTests(unittest.TestCase):
         def app(environ, start_response):
             return environ
 
-        target = self._makeOne([("top", "", app)])
+        target = self._makeOne()
+        target.add_url("top", "", app)
         environ = self._makeEnv("", "")
 
         result = target(environ, None)
@@ -122,7 +121,8 @@ class URLDispatcherTests(unittest.TestCase):
         def app(environ, start_response):
             return environ
 
-        target = self._makeOne([("top", "/{var1}", app)])
+        target = self._makeOne()
+        target.add_url("top", "/{var1}", app)
         environ = self._makeEnv("/a", "a")
 
         result = target(environ, None)
@@ -144,8 +144,7 @@ class URLDispatcherTests(unittest.TestCase):
         target = self._makeOne()
         marker = object()
         target.add_url('top', '/', marker)
-        self.assertEqual(target.urlmapper.patterns['top'][0].pattern, '/')
-        self.assertEqual(target.urlmapper.patterns['top'][1], marker)
+        self.assertEqual(target.urlmapper.patterns['top'].pattern, '/')
 
 class PatternToRegexTests(unittest.TestCase):
     def _callFUT(self, *args, **kwargs):
