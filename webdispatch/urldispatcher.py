@@ -23,7 +23,6 @@ class URLMapper(object):
             if match is None:
                 continue
             match.name = name
-            path_info[:match.matchlength].endswith('/')
             return match
 
     def generate(self, name, **kwargs):
