@@ -35,10 +35,22 @@ class URLMapperTests(unittest.TestCase):
     def test_with_retain(self):
         target = self._makeOne()
         marker = object()
-        target.add("user", "/user*")
-        result = target.lookup("/users")
+        from .uritemplate import URITemplateFormatException 
+        try:
+            target.add("user", "/user*")
+            self.fail()
+        except URITemplateFormatException:
+            pass
 
-        self.assertEqual(result, None)
+    def test_with_retain2(self):
+        target = self._makeOne()
+        marker = object()
+        target.add("user", "/user/*")
+        # precondition
+        # self.assertTrue(target.patterns['user'].match("/user/a"))
+        result = target.lookup("/user/a")
+
+        self.assertEqual(result.name, "user")
 
     def test_generate(self):
         target = self._makeOne()
@@ -101,6 +113,7 @@ class URLDispatcherTests(unittest.TestCase):
 
         self.assertEqual(result.urlmapper, target.urlmapper)
         self.assertEqual(result.prefix, '/root/sub')
+
     def test_empty(self):
 
         def app(environ, start_response):
@@ -203,6 +216,14 @@ class URITemplateTests(unittest.TestCase):
 
         self.assertEqual(result.matchdict, dict())
         self.assertEqual(result.matchlength, 0)
+
+    def test_wildcard(self):
+        path = "hoge/{var1}/*"
+        target = self._makeOne(path)
+        result = target.match("hoge/egg/bacon")
+
+        self.assertEqual(result.matchdict, dict(var1="egg"))
+        self.assertEqual(result.matchlength, 9)
 
     def test_match_no_match(self):
         path = "hoge/{vars}"

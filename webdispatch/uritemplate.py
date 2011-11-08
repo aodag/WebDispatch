@@ -25,8 +25,14 @@ class URIMatch(object):
         self.matchdict = matchdict
         self.matchlength = matchlength
 
+class URITemplateFormatException(Exception):
+    pass
+
 class URITemplate(object):
     def __init__(self, tmpl_pattern):
+        if tmpl_pattern.endswith('*') and not tmpl_pattern.endswith('/*'):
+            raise URITemplateFormatException('wildcard must be after slash.')
+
         self.pattern = tmpl_pattern
         self.regex = re.compile(pattern_to_regex(tmpl_pattern))
         self.template = string.Template(pattern_to_template(tmpl_pattern))

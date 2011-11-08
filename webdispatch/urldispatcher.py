@@ -23,9 +23,7 @@ class URLMapper(object):
             if match is None:
                 continue
             match.name = name
-            extra_path_info = path_info[match.matchlength:]
-            if extra_path_info and not extra_path_info.startswith('/'):
-                continue
+            path_info[:match.matchlength].endswith('/')
             return match
 
     def generate(self, name, **kwargs):
