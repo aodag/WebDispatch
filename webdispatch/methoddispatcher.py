@@ -5,6 +5,11 @@ from .util import application_uri
 class MethodDispatcher(DispatchBase):
     """ dispatch applications with request method.
     """
+    def __init__(self, **kwargs):
+        super(MethodDispatcher, self).__init__()
+        for name, app in kwargs.items():
+            self.register_app(name, app)
+
     def detect_view_name(self, environ):
         return environ['REQUEST_METHOD'].lower()
 

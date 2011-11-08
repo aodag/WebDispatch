@@ -1,11 +1,12 @@
 
 class DispatchBase(object):
 
-    def __init__(self, **kwargs):
+    def __init__(self, applications=None):
 
-        self.applications = {}
-        for k, v in kwargs.items():
-            self.register_app(k, v)
+        if applications is None:
+            self.applications = {}
+        else:
+            self.applications = applications
 
     def register_app(self, name, app):
         self.applications[name] = app

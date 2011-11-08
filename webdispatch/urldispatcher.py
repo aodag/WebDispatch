@@ -50,8 +50,8 @@ class URLDispatcher(DispatchBase):
     """ dispatch applications with url patterns.
     """
 
-    def __init__(self, urlmapper=None, prefix=''):
-        super(URLDispatcher, self).__init__()
+    def __init__(self, urlmapper=None, prefix='', applications=None):
+        super(URLDispatcher, self).__init__(applications=applications)
         if urlmapper is None:
             self.urlmapper = URLMapper()
         else:
@@ -65,7 +65,8 @@ class URLDispatcher(DispatchBase):
 
     def add_subroute(self, pattern):
         return URLDispatcher(urlmapper=self.urlmapper,
-            prefix=self.prefix + pattern)
+            prefix=self.prefix + pattern,
+            applications=self.applications)
 
     def detect_view_name(self, environ):
         script_name = environ.get('SCRIPT_NAME', '')
