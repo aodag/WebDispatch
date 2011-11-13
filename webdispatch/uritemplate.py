@@ -1,6 +1,8 @@
 import re
 import string
+
 vars_pt = re.compile(r"{(?P<varname>[a-zA-Z0-9_]+)}")
+metachars = ("\\", ".", "^", "$", "*", "+", "|", "?", "(", ")", "[", "]")
 
 def regex_replacer(m):
     d = m.groupdict()
@@ -15,6 +17,9 @@ def pattern_to_regex(pattern):
         end = ""
     else:
         end = "$"
+    for c in metachars:
+        pattern = pattern.replace(c, "\\" + c)
+
     return "^" + vars_pt.sub(regex_replacer, pattern) + end
 
 def pattern_to_template(pattern):
