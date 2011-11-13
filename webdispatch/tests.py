@@ -157,6 +157,12 @@ class PatternToRegexTests(unittest.TestCase):
 
         self.assertEqual(result, "^$")
 
+    def test_regex_meta_chas(self):
+        pattern = "{name}.{suffix}"
+        result = self._callFUT(pattern)
+
+        self.assertEqual(result, r"^(?P<name>\w+)\.(?P<suffix>\w+)$")
+
     def test_open_path(self):
         pattern = "hoge*"
         result = self._callFUT(pattern)
