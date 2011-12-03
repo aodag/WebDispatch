@@ -30,6 +30,23 @@ invoke dispatcher as WSGI Application::
   >>> res.body
   'Hello, webdispatch'
 
+
+Wildcard
++++++++++++++++
+
+You can use wildcard after last slash.
+Pattern with wildcard consumes paths before the wildcard, (and make that new script_name,)
+and remained paths becomes new path_info.
+
+  >>> @wsgify
+  ... def with_pathinfo(request):
+  ...     return "Hello, %s" % request.path_info
+  >>> dispatcher.add_url('top', '/with_pathinfo/*', with_pathinfo)
+  >>> req = Request.blank('/with_pathinfo/this/is/pathinfo')
+  >>> res = req.get_response(dispatcher)
+  >>> res.body
+  'Hello, this/is/pathinfo'
+
 Action Dispatch
 -------------------------------------------------
 
