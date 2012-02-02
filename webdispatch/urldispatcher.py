@@ -41,7 +41,7 @@ class URLGenerator(object):
     def generate(self, name, **kwargs):
         path = self.urlmapper.generate(name, **kwargs)
 
-        return self.application_uri + path
+        return self.application_uri.rstrip('/') + '/' + path.lstrip('/')
 
 class URLDispatcher(DispatchBase):
     """ dispatch applications with url patterns.

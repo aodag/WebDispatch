@@ -51,3 +51,14 @@ class SubroutingTests(unittest.TestCase):
 
         res = app.get('/sub/gen')
         self.assertTrue('/sub/x' in res)
+
+class TopTests(unittest.TestCase):
+
+    def _getAUT(self):
+        from top import app
+        return webtest.TestApp(app)
+
+    def test_it(self):
+        app = self._getAUT()
+        res = app.get('/')
+        self.assertEqual(res.body, 'http://localhost:80/')
