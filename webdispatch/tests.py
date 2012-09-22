@@ -354,7 +354,7 @@ class PasteTests(unittest.TestCase):
 
     def test_it(self):
         global_conf = {}
-        settings = {"patterns": """\
+        settings = {"patterns": """
         / = webdispatch.testing:greeting
         /bye = webdispatch.testing:bye"""}
 
