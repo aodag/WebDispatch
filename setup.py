@@ -21,13 +21,19 @@ def _read(name):
 readme = _read("README.txt")
 changes = _read("CHANGES.txt")
 
+points = {
+    "paste.app_factory": [
+        "url=webdispatch.paster:make_urldispatch_application",
+    ],
+}
+
 setup(
     name="WebDispatch",
     author="Atsushi Odagiri",
     author_email="aodagx@gmail.com",
     description="dispatch request on wsgi application.",
     long_description=readme + "\n" + changes,
-    version="1.0b4",
+    version="1.0b5",
     test_suite="webdispatch",
     license="MIT",
     install_requires=requires,
@@ -46,4 +52,5 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.2',
     ],
+    entry_points=points,
 )
