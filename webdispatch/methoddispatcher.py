@@ -16,7 +16,7 @@ class MethodDispatcher(DispatchBase):
     def on_view_not_found(self, environ, start_response):
         start_response("405 Method Not Allowed",
             [('Content-type', 'text/plain')])
-        return ["Method Not Allowed"]
+        return [b"Method Not Allowed"]
 
 class ActionHandlerAdapter(object):
     def __init__(self, handler_cls, action_name):
@@ -46,5 +46,5 @@ class ActionDispatcher(DispatchBase):
     def on_view_not_found(self, environ, start_response):
         start_response("404 Not Found",
             [('Content-type', 'text/plain')])
-        return ["Not Found %s" % application_uri(environ)]
+        return [b"Not Found " ,application_uri(environ).encode('utf-8')]
 

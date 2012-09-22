@@ -89,4 +89,4 @@ class URLDispatcher(DispatchBase):
 
     def on_view_not_found(self, environ, start_response):
         start_response('404 Not Found', [('Content-type', 'text/plain')])
-        return ['Not found']
+        return [b'Not found']
