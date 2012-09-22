@@ -1,4 +1,5 @@
 import unittest
+from . import testing
 
 class URLMapperTests(unittest.TestCase):
     def _getTarget(self):
@@ -93,13 +94,7 @@ class URLDispatcherTests(unittest.TestCase):
         return self._getTarget()(*args, **kwargs)
 
     def _makeEnv(self, path_info, script_name):
-        from wsgiref.util import setup_testing_defaults
-        environ = {
-            "PATH_INFO": path_info,
-            "SCRIPT_NAME": script_name,
-        }
-        setup_testing_defaults(environ)
-        return environ
+        return testing.make_env(path_info, script_name)
 
     def test_make(self):
         target = self._getTarget()
@@ -278,14 +273,14 @@ class MethodDispatcherTests(unittest.TestCase):
     def test_it(self):
         app = self._makeOne(get=lambda environ, start_response: ["get"])
         environ = self._setup_environ()
-        start_response = DummyStartResponse()
+        start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         self.assertEqual(result, ["get"])
 
     def test_not_allowed(self):
         app = self._makeOne(get=lambda environ, start_response: ["get"])
         environ = self._setup_environ(REQUEST_METHOD='POST')
-        start_response = DummyStartResponse()
+        start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         self.assertEqual(result, [b"Method Not Allowed"])
         self.assertEqual(start_response.status, '405 Method Not Allowed')
@@ -310,7 +305,7 @@ class ActionDispatcherTests(unittest.TestCase):
         app.register_app('test_app', lambda environ, start_response: ['got action'])
         routing_args = [(), {'action': 'test_app'}]
         environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
-        start_response = DummyStartResponse()
+        start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         self.assertEqual(result, ["got action"])
 
@@ -319,7 +314,7 @@ class ActionDispatcherTests(unittest.TestCase):
         app.register_app('test_app', lambda environ, start_response: ['got action'])
         routing_args = [(), {'action': 'no_app'}]
         environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
-        start_response = DummyStartResponse()
+        start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         self.assertEqual(start_response.status, '404 Not Found')
         self.assertEqual(result, [b"Not Found ", b"http://127.0.0.1/"])
@@ -334,22 +329,35 @@ class URLMapperMixinTests(unittest.TestCase):
 
     def test_generate_url(self):
         target = self._makeOne()
-        dummy_generator = DummyURLGenerator('generated')
+        dummy_generator = testing.DummyURLGenerator('generated')
         target.environ = {'webdispatch.urlgenerator': dummy_generator}
         result = target.generate_url('a', v1='1', v2='2')
 
         self.assertEqual(result, 'generated')
         self.assertEqual(dummy_generator.called, ('generate', 'a', {'v1': '1', 'v2': '2'}))
 
-class DummyURLGenerator(object):
-    def __init__(self, url):
-        self.url = url
 
-    def generate(self, name, **kwargs):
-        self.called = ('generate', name, kwargs)
-        return self.url
+class PasteTests(unittest.TestCase):
 
-class DummyStartResponse(object):
-    def __call__(self, status, headers):
-        self.status = status
-        self.headers = headers
+    def _makeEnv(self, path_info, script_name):
+        return testing.make_env(path_info, script_name)
+
+    def _callFUT(self, *args, **kwargs):
+        from .paster import make_urldispatch_application
+        return make_urldispatch_application(*args, **kwargs)
+
+    def assertResponseBody(self, app, path, expected):
+        environ = self._makeEnv(path, '')
+        start_response = testing.DummyStartResponse()
+        result = app(environ, start_response)
+        self.assertEqual(result, expected)
+
+    def test_it(self):
+        global_conf = {}
+        settings = {"patterns": """\
+        / = webdispatch.testing:greeting
+        /bye = webdispatch.testing:bye"""}
+
+        application = self._callFUT(global_conf, **settings)
+        self.assertResponseBody(application, '/', [b'Hello'])
+        self.assertResponseBody(application, '/bye', [b'bye'])
