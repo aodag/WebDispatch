@@ -36,12 +36,8 @@ class URLMapperTests(unittest.TestCase):
     def test_with_retain(self):
         target = self._makeOne()
         marker = object()
-        from .uritemplate import URITemplateFormatException 
-        try:
-            target.add("user", "/user*")
-            self.fail()
-        except URITemplateFormatException:
-            pass
+        from .uritemplate import URITemplateFormatException
+        self.assertRaises(URITemplateFormatException, target.add, "user", "/user*")
 
     def test_with_retain2(self):
         target = self._makeOne()
@@ -285,6 +281,43 @@ class MethodDispatcherTests(unittest.TestCase):
         self.assertEqual(result, [b"Method Not Allowed"])
         self.assertEqual(start_response.status, '405 Method Not Allowed')
 
+class ActionHandlerAdapterTests(unittest.TestCase):
+    def _getTarget(self):
+        from .methoddispatcher import ActionHandlerAdapter
+        return ActionHandlerAdapter
+
+    def _makeOne(self, *args, **kwargs):
+        return self._getTarget()(*args, **kwargs)
+
+    def _setup_environ(self, **kwargs):
+        environ = {}
+        from wsgiref.util import setup_testing_defaults
+        setup_testing_defaults(environ)
+        environ.update(kwargs)
+        return environ
+
+    def test_init(self):
+        class DummyAction(object):
+            pass
+        result = self._makeOne(DummyAction, "action")
+
+        self.assertEqual(result.handler_cls, DummyAction)
+        self.assertEqual(result.action_name, "action")
+
+    def test_call(self):
+        class DummyAction(object):
+            def action(self, environ, start_response):
+                start_response("200 OK",
+                               [("Content-type", "text/plain")])
+                return [b"Hello"]
+
+        target = self._makeOne(DummyAction, "action")
+        environ = self._setup_environ(REQUEST_METHOD='POST')
+        start_response = testing.DummyStartResponse()
+        result = target(environ, start_response)
+        self.assertEqual(result, [b"Hello"])
+        self.assertEqual(start_response.status, '200 OK')
+
 class ActionDispatcherTests(unittest.TestCase):
     def _getTarget(self):
         from .methoddispatcher import ActionDispatcher
@@ -308,6 +341,20 @@ class ActionDispatcherTests(unittest.TestCase):
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         self.assertEqual(result, ["got action"])
+
+    def test_register_action_handler(self):
+        app = self._makeOne()
+        class DummyHandler(object):
+            def test_action(self, environ, start_response):
+                return [b"test action"]
+
+        app.register_actionhandler(DummyHandler)
+        routing_args = [(), {'action': 'test_action'}]
+        environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
+        start_response = testing.DummyStartResponse()
+        result = app(environ, start_response)
+        self.assertEqual(result, [b"test action"])
+
 
     def test_not_found(self):
         app = self._makeOne()
@@ -355,8 +402,8 @@ class PasteTests(unittest.TestCase):
     def test_it(self):
         global_conf = {}
         settings = {"patterns": """
-        / = webdispatch.testing:greeting
-        /bye = webdispatch.testing:bye"""}
+        / = webdispatch.dummyapps:greeting
+        /bye = webdispatch.dummyapps:bye"""}
 
         application = self._callFUT(global_conf, **settings)
         self.assertResponseBody(application, '/', [b'Hello'])

@@ -2,9 +2,9 @@ from .uritemplate import URITemplate
 from .util import application_uri
 from .base import DispatchBase
 
-try:
+try: # pragma: no cover
     from collections import OrderedDict
-except ImportError:
+except ImportError: # pragma: no cover
     from ordereddict import OrderedDict
 
 class URLMapper(object):

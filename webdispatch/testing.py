@@ -29,6 +29,3 @@ class DummyApp(object):
         start_response("200 OK",
             [('Content-type', 'text/plain')])
         return self.response_body
-
-greeting = DummyApp([b'Hello'])
-bye = DummyApp([b'bye'])
