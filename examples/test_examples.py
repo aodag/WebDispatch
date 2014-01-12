@@ -61,4 +61,20 @@ class TopTests(unittest.TestCase):
     def test_it(self):
         app = self._getAUT()
         res = app.get('/')
-        self.assertEqual(res.body, 'http://localhost:80/')
+        self.assertEqual(res.text, 'http://localhost:80/')
+
+class SlugTests(unittest.TestCase):
+
+    def _getAUT(self):
+        from slug import app
+        return webtest.TestApp(app)
+
+    def test_it(self):
+        app = self._getAUT()
+        res = app.get('/abc')
+        self.assertEqual(res.text, 'abc')
+
+    def test_slug(self):
+        app = self._getAUT()
+        res = app.get('/a-b-c')
+        self.assertEqual(res.text, 'a-b-c')

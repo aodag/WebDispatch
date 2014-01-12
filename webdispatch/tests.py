@@ -165,7 +165,7 @@ class PatternToRegexTests(unittest.TestCase):
         pattern = "{name}.{suffix}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^(?P<name>\w+)\.(?P<suffix>\w+)$")
+        self.assertEqual(result, r"^(?P<name>[\w-]+)\.(?P<suffix>[\w-]+)$")
 
     def test_open_path(self):
         pattern = "hoge*"
@@ -183,19 +183,19 @@ class PatternToRegexTests(unittest.TestCase):
         pattern = "{var1}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^(?P<var1>\w+)$")
+        self.assertEqual(result, r"^(?P<var1>[\w-]+)$")
 
     def test_two_vars(self):
         pattern = "{var1}{var2}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^(?P<var1>\w+)(?P<var2>\w+)$")
+        self.assertEqual(result, r"^(?P<var1>[\w-]+)(?P<var2>[\w-]+)$")
 
     def test_vars(self):
         pattern = "/{var1}/{var2}"
         result = self._callFUT(pattern)
 
-        self.assertEqual(result, r"^/(?P<var1>\w+)/(?P<var2>\w+)$")
+        self.assertEqual(result, r"^/(?P<var1>[\w-]+)/(?P<var2>[\w-]+)$")
 
 class URITemplateTests(unittest.TestCase):
     def _getTarget(self):
@@ -237,6 +237,13 @@ class URITemplateTests(unittest.TestCase):
         self.assertEqual(result.matchdict, dict(var1="a"))
         self.assertEqual(result.matchlength, 1)
 
+    def test_match_match_complex_word(self):
+        path = "{var1}"
+        target = self._makeOne(path)
+        result = target.match("abc")
+
+        self.assertEqual(result.matchdict, dict(var1="abc"))
+
     def test_match_match_many(self):
         path = "{var1}/users/{var2}"
         target = self._makeOne(path)
@@ -250,6 +257,7 @@ class URITemplateTests(unittest.TestCase):
         result = target.substitute(dict(var1="x", var2="y"))
 
         self.assertEqual(result, "x/users/y")
+
 
 class MethodDispatcherTests(unittest.TestCase):
     def _getTarget(self):

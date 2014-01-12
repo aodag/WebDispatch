@@ -4,6 +4,7 @@ requires = []
 tests_require = [
     "nose",
     "coverage",
+    "webtest",
 ]
 import os
 
@@ -37,11 +38,14 @@ setup(
     author_email="aodagx@gmail.com",
     description="dispatch request on wsgi application.",
     long_description=readme + "\n" + changes,
-    version="1.1",
+    version="1.0.1",
     test_suite="webdispatch",
     license="MIT",
     install_requires=requires,
     tests_require=tests_require,
+    extras_require={
+        "testing": tests_require,
+    },
     url='http://github.com/aodag/WebDispatch',
     packages=find_packages(),
     classifiers=[

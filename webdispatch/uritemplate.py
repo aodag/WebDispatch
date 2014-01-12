@@ -6,7 +6,7 @@ metachars = ("\\", ".", "^", "$", "*", "+", "|", "?", "(", ")", "[", "]")
 
 def regex_replacer(m):
     d = m.groupdict()
-    return "(?P<" + d['varname'] + r">\w+)"
+    return "(?P<" + d['varname'] + r">[\w-]+)"
 
 def template_replacer(m):
     return "${" + m.groupdict()['varname'] + "}"
