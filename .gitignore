@@ -13,3 +13,7 @@ src
 *.tar.gz
 *.zip
 build
+
+env
+env27
+*.whl
