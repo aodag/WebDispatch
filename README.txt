@@ -105,3 +105,10 @@ invoke WSGI application::
   >>> res = req.get_response(restapp)
   >>> res.body
   'Get Hello'
+
+extra_environ
+---------------------------
+
+``URLDispatcher`` has ``get_extra_environ`` method (via ``DispatchBase`` class).
+
+You will override and return extra environ values for append values to wsgi environ.

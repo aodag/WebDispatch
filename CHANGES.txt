@@ -1,6 +1,11 @@
 Changes
 =========================
 
+1.1 (unreleased)
+-------------------------
+
+- added extra_environ method to DispatchBase class
+
 1.0.1
 ------------------------
 
