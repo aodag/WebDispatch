@@ -92,6 +92,21 @@ class URLDispatcherTests(unittest.TestCase):
     def _makeEnv(self, path_info, script_name):
         return testing.make_env(path_info, script_name)
 
+    def test_extra_environ(self):
+
+        def app(environ, start_response):
+            return environ
+
+        base_cls = self._getTarget()
+        cls = type('TestingDispatcher', (base_cls,),
+                   {'get_extra_environ': lambda self: {'testing-value': 1}})
+        target = cls()
+        target.add_url("top", "/", app)
+        environ = self._makeEnv("/", "")
+
+        result = target(environ, None)
+        self.assertEqual(result['testing-value'], 1) 
+
     def test_make(self):
         target = self._getTarget()
         dummy = object()
