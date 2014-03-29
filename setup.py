@@ -38,7 +38,7 @@ setup(
     author_email="aodagx@gmail.com",
     description="dispatch request on wsgi application.",
     long_description=readme + "\n" + changes,
-    version="1.0.1",
+    version="1.1",
     test_suite="webdispatch",
     license="MIT",
     install_requires=requires,
@@ -61,6 +61,7 @@ setup(
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ],
     entry_points=points,
 )
