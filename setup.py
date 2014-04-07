@@ -23,7 +23,7 @@ def _read(name):
     except:
         return ""
 
-readme = _read("README.txt")
+readme = _read("README.rst")
 changes = _read("CHANGES.txt")
 
 points = {
