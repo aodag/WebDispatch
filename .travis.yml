@@ -10,10 +10,12 @@ env:
     - TOXENV=coverage
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install python3.4 python3.4-dev
+  - if test "$TOXENV" = py34 ; then sudo apt-get update ; fi
+  - if test "$TOXENV" = py34 ; then sudo apt-get install python3.4 python3.4-dev ; fi
 
-install: pip install tox python-coveralls
+install:
+  - pip install tox
+  - if test "$TOXENV" = coverage ; then pip install python-coveralls ; fi
 script: tox
 after_success:
-  - coveralls
+  - if test "$TOXENV" = coverage ; then coveralls ; fi
