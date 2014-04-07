@@ -1,8 +1,16 @@
 language: python
-python:
-    - 2.7
-    - pypy
-    - 3.3
+python: 3.3
+env:
+  matrix:
+    - TOXENV=py26
+    - TOXENV=py27
+    - TOXENV=pypy
+    - TOXENV=py33
+    - TOXENV=py34
 
-install: "python setup.py install"
-script: "python setup.py test"
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install python3.4 python3.4-dev
+
+install: pip install tox
+script: tox
