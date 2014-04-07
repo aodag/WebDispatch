@@ -1,6 +1,12 @@
 WebDispatch
 ============================
 
+.. image:: https://travis-ci.org/aodag/WebDispatch.svg?branch=master
+   :target: https://travis-ci.org/aodag/WebDispatch
+
+.. image:: https://coveralls.io/repos/aodag/WebDispatch/badge.png?branch=master 
+   :target: https://coveralls.io/r/aodag/WebDispatch?branch=master 
+
 WebDispatch is dispatcher collection for wsgi application. 
 That has no dependency to exsiting frameworks, but works fine with `WebOb <http://www.webob.org>`_.
 
