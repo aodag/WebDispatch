@@ -1,6 +1,12 @@
 Changes
 =========================
 
+TODO
+-------------------------
+
+- adding type converter for url vars
+- adding extra_environ argument to constructer
+
 1.2
 -------------------------
 
