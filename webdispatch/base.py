@@ -1,5 +1,9 @@
+""" base dispatchers
+"""
+
 
 class DispatchBase(object):
+    """ Base class for dispatcher application"""
 
     def __init__(self, applications=None):
 
@@ -9,13 +13,24 @@ class DispatchBase(object):
             self.applications = applications
 
     def register_app(self, name, app):
+        """ register dispatchable wsgi application"""
         self.applications[name] = app
 
     def get_extra_environ(self):
+        """ returns for environ values for wsgi environ"""
         return {}
 
+    def detect_view_name(self, environ):
+        """ must returns view name for request """
+        raise NotImplementedError()
+
+    def on_view_not_found(self, environ, start_response):
+        """ called when view is not found"""
+        raise NotImplementedError()
+
     def __call__(self, environ, start_response):
-        environ.update(self.get_extra_environ())
+        extra_environ = self.get_extra_environ() 
+        environ.update(extra_environ)
         view_name = self.detect_view_name(environ)
         if view_name is None:
             return self.on_view_not_found(environ, start_response)

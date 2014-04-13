@@ -309,12 +309,9 @@ class MethodDispatcherTests(unittest.TestCase):
 
 
 class ActionHandlerAdapterTests(unittest.TestCase):
-    def _getTarget(self):
-        from .methoddispatcher import ActionHandlerAdapter
-        return ActionHandlerAdapter
-
-    def _makeOne(self, *args, **kwargs):
-        return self._getTarget()(*args, **kwargs)
+    def _callFUT(self, *args, **kwargs):
+        from .methoddispatcher import action_handler_adapter
+        return action_handler_adapter(*args, **kwargs)
 
     def _setup_environ(self, **kwargs):
         environ = {}
@@ -323,14 +320,6 @@ class ActionHandlerAdapterTests(unittest.TestCase):
         environ.update(kwargs)
         return environ
 
-    def test_init(self):
-        class DummyAction(object):
-            pass
-        result = self._makeOne(DummyAction, "action")
-
-        self.assertEqual(result.handler_cls, DummyAction)
-        self.assertEqual(result.action_name, "action")
-
     def test_call(self):
         class DummyAction(object):
             def action(self, environ, start_response):
@@ -338,7 +327,7 @@ class ActionHandlerAdapterTests(unittest.TestCase):
                                [("Content-type", "text/plain")])
                 return [b"Hello"]
 
-        target = self._makeOne(DummyAction, "action")
+        target = self._callFUT(DummyAction, "action")
         environ = self._setup_environ(REQUEST_METHOD='POST')
         start_response = testing.DummyStartResponse()
         result = target(environ, start_response)
