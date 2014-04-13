@@ -8,6 +8,7 @@ def make_env(path_info, script_name):
     setup_testing_defaults(environ)
     return environ
 
+
 class DummyURLGenerator(object):
     def __init__(self, url):
         self.url = url
@@ -16,16 +17,19 @@ class DummyURLGenerator(object):
         self.called = ('generate', name, kwargs)
         return self.url
 
+
 class DummyStartResponse(object):
     def __call__(self, status, headers):
         self.status = status
         self.headers = headers
+
 
 class DummyApp(object):
     def __init__(self, response_body):
         self.response_body = response_body
 
     def __call__(self, environ, start_response):
-        start_response("200 OK",
+        start_response(
+            "200 OK",
             [('Content-type', 'text/plain')])
         return self.response_body

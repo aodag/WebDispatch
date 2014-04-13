@@ -1,6 +1,7 @@
 import unittest
 from . import testing
 
+
 class URLMapperTests(unittest.TestCase):
     def _getTarget(self):
         from .urldispatcher import URLMapper
@@ -18,7 +19,6 @@ class URLMapperTests(unittest.TestCase):
 
     def test_with_one_uri(self):
         target = self._makeOne()
-        marker = object()
         target.add("top", "/")
         result = target.lookup("/")
 
@@ -26,7 +26,6 @@ class URLMapperTests(unittest.TestCase):
 
     def test_with_two_uri(self):
         target = self._makeOne()
-        marker = object()
         target.add("user", "/user")
         target.add("top", "/")
         result = target.lookup("/")
@@ -35,13 +34,13 @@ class URLMapperTests(unittest.TestCase):
 
     def test_with_retain(self):
         target = self._makeOne()
-        marker = object()
         from .uritemplate import URITemplateFormatException
-        self.assertRaises(URITemplateFormatException, target.add, "user", "/user*")
+        self.assertRaises(
+            URITemplateFormatException,
+            target.add, "user", "/user*")
 
     def test_with_retain2(self):
         target = self._makeOne()
-        marker = object()
         target.add("user", "/user/*")
         # precondition
         # self.assertTrue(target.patterns['user'].match("/user/a"))
@@ -51,7 +50,6 @@ class URLMapperTests(unittest.TestCase):
 
     def test_generate(self):
         target = self._makeOne()
-        marker = object()
         target.add("user", "/user")
 
         result = target.generate("user")
@@ -67,10 +65,12 @@ class URLGeneratorTests(unittest.TestCase):
         return self._getTarget()(*args, **kwargs)
 
     def test_generate(self):
-        environ = {'SCRIPT_NAME': '/test_app/', 
+        environ = {
+            'SCRIPT_NAME': '/test_app/',
             'wsgi.url_scheme': 'http',
             'SERVER_NAME': 'localhost',
             'SERVER_PORT': '80'}
+
         class DummyMapper(object):
             def generate(self, *args, **kwargs):
                 return 'generated_url'
@@ -79,6 +79,7 @@ class URLGeneratorTests(unittest.TestCase):
         target = self._makeOne(environ, dummy_mapper)
         result = target.generate('users', user_id='aodag')
         self.assertEqual(result, 'http://localhost/test_app/generated_url')
+
 
 class URLDispatcherTests(unittest.TestCase):
 
@@ -105,7 +106,7 @@ class URLDispatcherTests(unittest.TestCase):
         environ = self._makeEnv("/", "")
 
         result = target(environ, None)
-        self.assertEqual(result['testing-value'], 1) 
+        self.assertEqual(result['testing-value'], 1)
 
     def test_make(self):
         target = self._getTarget()
@@ -130,7 +131,7 @@ class URLDispatcherTests(unittest.TestCase):
         environ = self._makeEnv("", "")
 
         result = target(environ, None)
-        self.assertEqual(result['PATH_INFO'], '') 
+        self.assertEqual(result['PATH_INFO'], '')
         self.assertEqual(result['SCRIPT_NAME'], '')
         self.assertEqual(result['wsgiorg.routing_args'], ([], {}))
         self.assertEqual(result['webdispatch.urlmapper'], target.urlmapper)
@@ -145,7 +146,7 @@ class URLDispatcherTests(unittest.TestCase):
         environ = self._makeEnv("/a", "a")
 
         result = target(environ, None)
-        self.assertEqual(result['PATH_INFO'], '') 
+        self.assertEqual(result['PATH_INFO'], '')
         self.assertEqual(result['SCRIPT_NAME'], 'a/a')
         self.assertEqual(result['wsgiorg.routing_args'], ([], {'var1': 'a'}))
 
@@ -153,17 +154,18 @@ class URLDispatcherTests(unittest.TestCase):
         target = self._makeOne()
         environ = self._makeEnv("", "")
         called = []
+
         def start_response(status, headers):
             called.append((status, headers))
         result = target(environ, start_response)
         self.assertEqual(result, [b"Not found"])
-        
 
     def test_add_url(self):
         target = self._makeOne()
         marker = object()
         target.add_url('top', '/', marker)
         self.assertEqual(target.urlmapper.patterns['top'].pattern, '/')
+
 
 class PatternToRegexTests(unittest.TestCase):
     def _callFUT(self, *args, **kwargs):
@@ -211,6 +213,7 @@ class PatternToRegexTests(unittest.TestCase):
         result = self._callFUT(pattern)
 
         self.assertEqual(result, r"^/(?P<var1>[\w-]+)/(?P<var2>[\w-]+)$")
+
 
 class URITemplateTests(unittest.TestCase):
     def _getTarget(self):
@@ -304,6 +307,7 @@ class MethodDispatcherTests(unittest.TestCase):
         self.assertEqual(result, [b"Method Not Allowed"])
         self.assertEqual(start_response.status, '405 Method Not Allowed')
 
+
 class ActionHandlerAdapterTests(unittest.TestCase):
     def _getTarget(self):
         from .methoddispatcher import ActionHandlerAdapter
@@ -341,6 +345,7 @@ class ActionHandlerAdapterTests(unittest.TestCase):
         self.assertEqual(result, [b"Hello"])
         self.assertEqual(start_response.status, '200 OK')
 
+
 class ActionDispatcherTests(unittest.TestCase):
     def _getTarget(self):
         from .methoddispatcher import ActionDispatcher
@@ -358,15 +363,20 @@ class ActionDispatcherTests(unittest.TestCase):
 
     def test_it(self):
         app = self._makeOne()
-        app.register_app('test_app', lambda environ, start_response: ['got action'])
+
+        def test_app(environ, start_response):
+            return [b'got action']
+
+        app.register_app('test_app', test_app)
         routing_args = [(), {'action': 'test_app'}]
         environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
-        self.assertEqual(result, ["got action"])
+        self.assertEqual(result, [b"got action"])
 
     def test_register_action_handler(self):
         app = self._makeOne()
+
         class DummyHandler(object):
             def test_action(self, environ, start_response):
                 return [b"test action"]
@@ -378,16 +388,24 @@ class ActionDispatcherTests(unittest.TestCase):
         result = app(environ, start_response)
         self.assertEqual(result, [b"test action"])
 
-
     def test_not_found(self):
         app = self._makeOne()
-        app.register_app('test_app', lambda environ, start_response: ['got action'])
+
+        def test_app(environ, start_response):
+            return [b'got action']
+
+        app.register_app('test_app',
+                         test_app)
         routing_args = [(), {'action': 'no_app'}]
-        environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
+        env = {'wsgiorg.routing_args': routing_args}
+        environ = self._setup_environ(**env)
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         self.assertEqual(start_response.status, '404 Not Found')
-        self.assertEqual(result, [b"Not Found ", b"http://127.0.0.1/"])
+        self.assertEqual(result,
+                         [b"Not Found ",
+                          b"http://127.0.0.1/"])
+
 
 class URLMapperMixinTests(unittest.TestCase):
     def _getTarget(self):
@@ -404,7 +422,8 @@ class URLMapperMixinTests(unittest.TestCase):
         result = target.generate_url('a', v1='1', v2='2')
 
         self.assertEqual(result, 'generated')
-        self.assertEqual(dummy_generator.called, ('generate', 'a', {'v1': '1', 'v2': '2'}))
+        self.assertEqual(dummy_generator.called,
+                         ('generate', 'a', {'v1': '1', 'v2': '2'}))
 
 
 class PasteTests(unittest.TestCase):

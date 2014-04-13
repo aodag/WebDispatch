@@ -2,10 +2,11 @@ from .uritemplate import URITemplate
 from .util import application_uri
 from .base import DispatchBase
 
-try: # pragma: no cover
+try:  # pragma: no cover
     from collections import OrderedDict
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     from ordereddict import OrderedDict
+
 
 class URLMapper(object):
     """ find application matched url pattern.
@@ -29,6 +30,7 @@ class URLMapper(object):
         template = self.patterns[name]
         return template.substitute(kwargs)
 
+
 class URLGenerator(object):
     """ generate url form parameters and url patterns.
     """
@@ -42,6 +44,7 @@ class URLGenerator(object):
         path = self.urlmapper.generate(name, **kwargs)
 
         return self.application_uri.rstrip('/') + '/' + path.lstrip('/')
+
 
 class URLDispatcher(DispatchBase):
     """ dispatch applications with url patterns.
@@ -61,7 +64,8 @@ class URLDispatcher(DispatchBase):
         self.register_app(name, application)
 
     def add_subroute(self, pattern):
-        return URLDispatcher(urlmapper=self.urlmapper,
+        return URLDispatcher(
+            urlmapper=self.urlmapper,
             prefix=self.prefix + pattern,
             applications=self.applications)
 
@@ -81,7 +85,8 @@ class URLDispatcher(DispatchBase):
         new_named.update(named_args)
         environ['wsgiorg.routing_args'] = (new_pos, new_named)
         environ['webdispatch.urlmapper'] = self.urlmapper
-        environ['webdispatch.urlgenerator'] = URLGenerator(environ, self.urlmapper)
+        urlgenerator = URLGenerator(environ, self.urlmapper)
+        environ['webdispatch.urlgenerator'] = urlgenerator
         environ['SCRIPT_NAME'] = script_name + path_info[:match.matchlength]
         environ['PATH_INFO'] = extra_path_info
 

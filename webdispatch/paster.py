@@ -3,7 +3,7 @@ from .urldispatcher import URLDispatcher
 
 
 def make_urldispatch_application(global_conf, **settings):
-    patterns = [p.split("=", 1) 
+    patterns = [p.split("=", 1)
                 for p in settings['patterns'].split('\n')
                 if p]
     application = URLDispatcher()

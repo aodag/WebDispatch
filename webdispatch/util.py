@@ -1,1 +1,1 @@
-from wsgiref.util import application_uri
+from wsgiref.util import application_uri  # noqa
