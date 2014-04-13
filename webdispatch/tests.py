@@ -390,12 +390,8 @@ class ActionDispatcherTests(unittest.TestCase):
 
     def test_not_found(self):
         app = self._makeOne()
-
-        def test_app(environ, start_response):
-            return [b'got action']
-
         app.register_app('test_app',
-                         test_app)
+                         None)
         routing_args = [(), {'action': 'no_app'}]
         env = {'wsgiorg.routing_args': routing_args}
         environ = self._setup_environ(**env)
