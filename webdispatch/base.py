@@ -29,7 +29,7 @@ class DispatchBase(object):
         raise NotImplementedError()
 
     def __call__(self, environ, start_response):
-        extra_environ = self.get_extra_environ() 
+        extra_environ = self.get_extra_environ()
         environ.update(extra_environ)
         view_name = self.detect_view_name(environ)
         if view_name is None:
