@@ -8,6 +8,7 @@ env:
     - TOXENV=py33
     - TOXENV=py34
     - TOXENV=coverage
+    - TOXENV=flake8
 
 before_install:
   - if test "$TOXENV" = py34 ; then sudo apt-get update ; fi
