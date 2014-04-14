@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 
-requires = []
 tests_require = [
     "pytest",
     "pytest-cov",
@@ -8,11 +7,6 @@ tests_require = [
     "webtest",
 ]
 import os
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    requires.append('ordereddict')
 
 here = os.path.dirname(__file__)
 readme = None
@@ -42,7 +36,7 @@ setup(
     version="1.2",
     test_suite="webdispatch",
     license="MIT",
-    install_requires=requires,
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         "testing": tests_require,

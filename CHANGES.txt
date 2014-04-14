@@ -5,12 +5,13 @@ TODO
 -------------------------
 
 - adding type converter for url vars
-- drop python2.6
 
 1.2
 -------------------------
 
 - added extra_environ argument to constructer
+- drop python2.6 tests
+- drop dependency for python2.6
 
 
 1.1
