@@ -94,24 +94,25 @@ class TestActionDispatcher(object):
         return self._get_target()(*args, **kwargs)
 
     @staticmethod
-    def _setup_environ(**kwargs):
+    def _setup_environ(values):
         """ setup wsgi environ """
         environ = {}
         from wsgiref.util import setup_testing_defaults
         setup_testing_defaults(environ)
-        environ.update(kwargs)
+        environ.update(values)
         return environ
 
     def test_it(self):
         """ test for basic usage"""
         app = self._make_one()
 
-        def test_app(environ, start_response):
+        def test_app(*_):
+            """ dummy app"""
             return [b'got action']
 
         app.register_app('test_app', test_app)
         routing_args = [(), {'action': 'test_app'}]
-        environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
+        environ = self._setup_environ({'wsgiorg.routing_args': routing_args})
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         compare(result, [b"got action"])
@@ -121,12 +122,15 @@ class TestActionDispatcher(object):
         app = self._make_one()
 
         class DummyHandler(object):
-            def test_action(self, environ, start_response):
+            """ dummy handler """
+            @staticmethod
+            def test_action(*_):
+                """ dummy action """
                 return [b"test action"]
 
         app.register_actionhandler(DummyHandler)
         routing_args = [(), {'action': 'test_action'}]
-        environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
+        environ = self._setup_environ({'wsgiorg.routing_args': routing_args})
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         compare(result, [b"test action"])
@@ -139,7 +143,7 @@ class TestActionDispatcher(object):
                          None)
         routing_args = [(), {'action': 'no_app'}]
         env = {'wsgiorg.routing_args': routing_args}
-        environ = self._setup_environ(**env)
+        environ = self._setup_environ(env)
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
         compare(start_response.status, '404 Not Found')
