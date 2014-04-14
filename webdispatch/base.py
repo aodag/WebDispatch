@@ -20,11 +20,11 @@ class DispatchBase(object):
         """ returns for environ values for wsgi environ"""
         return {}
 
-    def detect_view_name(self, environ):
+    def detect_view_name(self, environ):  # pragma: nocover
         """ must returns view name for request """
         raise NotImplementedError()
 
-    def on_view_not_found(self, environ, start_response):
+    def on_view_not_found(self, environ, start_response):  # pragma: nocover
         """ called when view is not found"""
         raise NotImplementedError()
 

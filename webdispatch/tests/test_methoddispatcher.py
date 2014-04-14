@@ -1,17 +1,23 @@
 """ tests for webdispatch.methoddispatcher"""
-import unittest
+from testfixtures import compare
 from webdispatch import testing
 
 
-class MethodDispatcherTests(unittest.TestCase):
-    def _getTarget(self):
+class TestMethodDispatcher(object):
+    """ test for webdispatch.methoddispatcher.MethodDispatcher"""
+    @staticmethod
+    def _get_target():
+        """ get class under test """
         from webdispatch.methoddispatcher import MethodDispatcher
         return MethodDispatcher
 
-    def _makeOne(self, *args, **kwargs):
-        return self._getTarget()(*args, **kwargs)
+    def _make_one(self, *args, **kwargs):
+        """ create object under test """
+        return self._get_target()(*args, **kwargs)
 
-    def _setup_environ(self, **kwargs):
+    @staticmethod
+    def _setup_environ(**kwargs):
+        """ setup basic wsgi environ"""
         environ = {}
         from wsgiref.util import setup_testing_defaults
         setup_testing_defaults(environ)
@@ -19,27 +25,34 @@ class MethodDispatcherTests(unittest.TestCase):
         return environ
 
     def test_it(self):
-        app = self._makeOne(get=lambda environ, start_response: ["get"])
+        """ test basic using"""
+        app = self._make_one(get=lambda environ, start_response: ["get"])
         environ = self._setup_environ()
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
-        self.assertEqual(result, ["get"])
+        compare(result, ["get"])
 
     def test_not_allowed(self):
-        app = self._makeOne(get=lambda environ, start_response: ["get"])
+        """ test not found views"""
+        app = self._make_one(get=lambda environ, start_response: ["get"])
         environ = self._setup_environ(REQUEST_METHOD='POST')
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
-        self.assertEqual(result, [b"Method Not Allowed"])
-        self.assertEqual(start_response.status, '405 Method Not Allowed')
+        compare(result, [b"Method Not Allowed"])
+        compare(start_response.status, '405 Method Not Allowed')
 
 
-class ActionHandlerAdapterTests(unittest.TestCase):
-    def _callFUT(self, *args, **kwargs):
+class TestActionHandlerAdapter(object):
+    """ test for webdispatch.methoddispatcher.action_handler_adapter"""
+    @staticmethod
+    def _call_fut(*args, **kwargs):
+        """ call function under test """
         from webdispatch.methoddispatcher import action_handler_adapter
         return action_handler_adapter(*args, **kwargs)
 
-    def _setup_environ(self, **kwargs):
+    @staticmethod
+    def _setup_environ(**kwargs):
+        """ setup basic wsgi environ """
         environ = {}
         from wsgiref.util import setup_testing_defaults
         setup_testing_defaults(environ)
@@ -47,29 +60,42 @@ class ActionHandlerAdapterTests(unittest.TestCase):
         return environ
 
     def test_call(self):
+        """ test basic using """
+
         class DummyAction(object):
-            def action(self, environ, start_response):
+            """ dummy action class"""
+            def __init__(self):
+                self.message = b"Hello"
+
+            def action(self, _, start_response):
+                """ dummy action """
                 start_response("200 OK",
                                [("Content-type", "text/plain")])
-                return [b"Hello"]
+                return [self.message]
 
-        target = self._callFUT(DummyAction, "action")
+        target = self._call_fut(DummyAction, "action")
         environ = self._setup_environ(REQUEST_METHOD='POST')
         start_response = testing.DummyStartResponse()
         result = target(environ, start_response)
-        self.assertEqual(result, [b"Hello"])
-        self.assertEqual(start_response.status, '200 OK')
+        compare(result, [b"Hello"])
+        compare(start_response.status, '200 OK')
 
 
-class ActionDispatcherTests(unittest.TestCase):
-    def _getTarget(self):
+class TestActionDispatcher(object):
+    """ test for webdispatch.methoddispatcher.ActionDispatcher"""
+    @staticmethod
+    def _get_target():
+        """ get class under test"""
         from webdispatch.methoddispatcher import ActionDispatcher
         return ActionDispatcher
 
-    def _makeOne(self, *args, **kwargs):
-        return self._getTarget()(*args, **kwargs)
+    def _make_one(self, *args, **kwargs):
+        """ create object under test"""
+        return self._get_target()(*args, **kwargs)
 
-    def _setup_environ(self, **kwargs):
+    @staticmethod
+    def _setup_environ(**kwargs):
+        """ setup wsgi environ """
         environ = {}
         from wsgiref.util import setup_testing_defaults
         setup_testing_defaults(environ)
@@ -77,7 +103,8 @@ class ActionDispatcherTests(unittest.TestCase):
         return environ
 
     def test_it(self):
-        app = self._makeOne()
+        """ test for basic usage"""
+        app = self._make_one()
 
         def test_app(environ, start_response):
             return [b'got action']
@@ -87,10 +114,11 @@ class ActionDispatcherTests(unittest.TestCase):
         environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
-        self.assertEqual(result, [b"got action"])
+        compare(result, [b"got action"])
 
     def test_register_action_handler(self):
-        app = self._makeOne()
+        """ test register """
+        app = self._make_one()
 
         class DummyHandler(object):
             def test_action(self, environ, start_response):
@@ -101,10 +129,12 @@ class ActionDispatcherTests(unittest.TestCase):
         environ = self._setup_environ(**{'wsgiorg.routing_args': routing_args})
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
-        self.assertEqual(result, [b"test action"])
+        compare(result, [b"test action"])
 
     def test_not_found(self):
-        app = self._makeOne()
+        """ test called not registered action """
+
+        app = self._make_one()
         app.register_app('test_app',
                          None)
         routing_args = [(), {'action': 'no_app'}]
@@ -112,7 +142,7 @@ class ActionDispatcherTests(unittest.TestCase):
         environ = self._setup_environ(**env)
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
-        self.assertEqual(start_response.status, '404 Not Found')
-        self.assertEqual(result,
-                         [b"Not Found ",
-                          b"http://127.0.0.1/"])
+        compare(start_response.status, '404 Not Found')
+        compare(result,
+                [b"Not Found ",
+                 b"http://127.0.0.1/"])

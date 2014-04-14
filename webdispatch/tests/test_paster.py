@@ -1,29 +1,35 @@
 """ test for webdispatch.paster """
-import unittest
+from testfixtures import compare
 from webdispatch import testing
 
 
-class PasteTests(unittest.TestCase):
-
-    def _makeEnv(self, path_info, script_name):
+class TestPaste(object):
+    """ test for webdispatch.paster.make_urldispatch_application """
+    @staticmethod
+    def _make_env(path_info, script_name):
+        """ make basic wsgi environ """
         return testing.make_env(path_info, script_name)
 
-    def _callFUT(self, *args, **kwargs):
+    @staticmethod
+    def _call_fut(*args, **kwargs):
+        """ call function under test """
         from webdispatch.paster import make_urldispatch_application
         return make_urldispatch_application(*args, **kwargs)
 
-    def assertResponseBody(self, app, path, expected):
-        environ = self._makeEnv(path, '')
+    def assert_response_body(self, app, path, expected):
+        """ assert body created app on path equals expected"""
+        environ = self._make_env(path, '')
         start_response = testing.DummyStartResponse()
         result = app(environ, start_response)
-        self.assertEqual(result, expected)
+        compare(result, expected)
 
     def test_it(self):
+        """ test basic usage """
         global_conf = {}
-        settings = {"patterns": """
+        patterns = """
         / = webdispatch.dummyapps:greeting
-        /bye = webdispatch.dummyapps:bye"""}
+        /bye = webdispatch.dummyapps:bye"""
 
-        application = self._callFUT(global_conf, **settings)
-        self.assertResponseBody(application, '/', [b'Hello'])
-        self.assertResponseBody(application, '/bye', [b'bye'])
+        application = self._call_fut(global_conf, patterns=patterns)
+        self.assert_response_body(application, '/', [b'Hello'])
+        self.assert_response_body(application, '/bye', [b'bye'])

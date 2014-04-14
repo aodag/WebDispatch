@@ -2,8 +2,9 @@ from setuptools import setup, find_packages
 
 requires = []
 tests_require = [
-    "nose",
-    "coverage",
+    "pytest",
+    "pytest-cov",
+    "testfixtures",
     "webtest",
 ]
 import os

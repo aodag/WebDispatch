@@ -1,3 +1,7 @@
+""" urldispatcher
+
+"""
+
 from .uritemplate import URITemplate
 from .util import application_uri
 from .base import DispatchBase
@@ -16,9 +20,13 @@ class URLMapper(object):
         self.patterns = OrderedDict()
 
     def add(self, name, pattern):
+        """ add url pattern for name
+        """
         self.patterns[name] = URITemplate(pattern)
 
     def lookup(self, path_info):
+        """ lookup url match for path_info
+        """
         for name, pattern in self.patterns.items():
             match = pattern.match(path_info)
             if match is None:
@@ -27,6 +35,8 @@ class URLMapper(object):
             return match
 
     def generate(self, name, **kwargs):
+        """ generate url for named url pattern with kwargs
+        """
         template = self.patterns[name]
         return template.substitute(kwargs)
 
@@ -41,6 +51,8 @@ class URLGenerator(object):
         self.application_uri = application_uri(environ)
 
     def generate(self, name, **kwargs):
+        """ generate full qualified url for named url pattern with kwargs
+        """
         path = self.urlmapper.generate(name, **kwargs)
 
         return self.application_uri.rstrip('/') + '/' + path.lstrip('/')
@@ -60,16 +72,19 @@ class URLDispatcher(DispatchBase):
         self.prefix = prefix
 
     def add_url(self, name, pattern, application):
+        """ add url pattern dispatching to application"""
         self.urlmapper.add(name, self.prefix + pattern)
         self.register_app(name, application)
 
     def add_subroute(self, pattern):
+        """ create new URLDispatcher routed by pattern """
         return URLDispatcher(
             urlmapper=self.urlmapper,
             prefix=self.prefix + pattern,
             applications=self.applications)
 
     def detect_view_name(self, environ):
+        """ detect view name from environ """
         script_name = environ.get('SCRIPT_NAME', '')
         path_info = environ.get('PATH_INFO', '')
         match = self.urlmapper.lookup(path_info)
@@ -93,5 +108,6 @@ class URLDispatcher(DispatchBase):
         return match.name
 
     def on_view_not_found(self, environ, start_response):
+        """ called when views not found"""
         start_response('404 Not Found', [('Content-type', 'text/plain')])
         return [b'Not found']
