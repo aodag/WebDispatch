@@ -5,12 +5,16 @@
 class DispatchBase(object):
     """ Base class for dispatcher application"""
 
-    def __init__(self, applications=None):
+    def __init__(self, applications=None, extra_environ=None):
 
         if applications is None:
             self.applications = {}
         else:
             self.applications = applications
+        if extra_environ is None:
+            self.extra_environ = {}
+        else:
+            self.extra_environ = extra_environ
 
     def register_app(self, name, app):
         """ register dispatchable wsgi application"""
@@ -18,7 +22,7 @@ class DispatchBase(object):
 
     def get_extra_environ(self):
         """ returns for environ values for wsgi environ"""
-        return {}
+        return self.extra_environ
 
     def detect_view_name(self, environ):  # pragma: nocover
         """ must returns view name for request """

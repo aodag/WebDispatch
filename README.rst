@@ -115,6 +115,5 @@ invoke WSGI application::
 extra_environ
 ---------------------------
 
-``URLDispatcher`` has ``get_extra_environ`` method (via ``DispatchBase`` class).
-
-You will override and return extra environ values for append values to wsgi environ.
+``DispatchBase`` accepts ``extra_environ`` argument.
+Dispatcher adds that argument to wsgi environ by request.
