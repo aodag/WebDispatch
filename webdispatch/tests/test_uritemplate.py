@@ -1,6 +1,6 @@
 """ tests for webdispatch.uritemplate """
 
-from testfixtures import compare
+from testfixtures import compare, ShouldRaise
 
 
 class TestPatternToRegex(object):
@@ -74,6 +74,13 @@ class TestURITemplate(object):
     def _make_one(self, *args, **kwargs):
         """ create object under test"""
         return self._get_target()(*args, **kwargs)
+
+    def test_bad_format(self):
+        """ test bad format template"""
+        from webdispatch.uritemplate import URITemplateFormatException
+        path = "a*"
+        with ShouldRaise(URITemplateFormatException):
+            self._make_one(path)
 
     def test_match_empty(self):
         """ test matching empty path """

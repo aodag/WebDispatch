@@ -87,25 +87,10 @@ class TestActionHandlerAdapter(object):
             '200 OK', [('Content-type', 'text/plain')])
 
     def test_invalid_name(self):
-        """ test basic using """
-
-        class DummyAction(object):
-            """ dummy action class"""
-            def __init__(self):
-                self.message = b"Hello"
-
-            def get_message(self):
-                """ get message to return body"""
-                return self.message
-
-            def action(self, _, start_response):
-                """ dummy action """
-                start_response("200 OK",
-                               [("Content-type", "text/plain")])
-                return [self.get_message()]
+        """ test using invalid attr name """
 
         with ShouldRaise(ValueError):
-            self._call_fut(DummyAction, "actionx")
+            self._call_fut(object, "actionx")
 
 
 class TestActionDispatcher(object):
