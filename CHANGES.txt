@@ -5,6 +5,7 @@ TODO
 -------------------------
 
 - adding type converter for url vars
+- drop python2.6
 
 1.2
 -------------------------
