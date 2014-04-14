@@ -27,7 +27,7 @@ class URLMapper(object):
             match = pattern.match(path_info)
             if match is None:
                 continue
-            match.name = name
+            match["name"] = name
             return match
 
     def generate(self, name, **kwargs):
@@ -87,9 +87,9 @@ class URLDispatcher(DispatchBase):
         if match is None:
             return None
 
-        extra_path_info = path_info[match.matchlength:]
+        extra_path_info = path_info[match["matchlength"]:]
         pos_args = []
-        named_args = match.matchdict
+        named_args = match["matchdict"]
         cur_pos, cur_named = environ.get('wsgiorg.routing_args', ((), {}))
         new_pos = list(cur_pos) + list(pos_args)
         new_named = cur_named.copy()
@@ -98,10 +98,10 @@ class URLDispatcher(DispatchBase):
         environ['webdispatch.urlmapper'] = self.urlmapper
         urlgenerator = URLGenerator(environ, self.urlmapper)
         environ['webdispatch.urlgenerator'] = urlgenerator
-        environ['SCRIPT_NAME'] = script_name + path_info[:match.matchlength]
+        environ['SCRIPT_NAME'] = script_name + path_info[:match["matchlength"]]
         environ['PATH_INFO'] = extra_path_info
 
-        return match.name
+        return match["name"]
 
     def on_view_not_found(self, environ, start_response):
         """ called when views not found"""

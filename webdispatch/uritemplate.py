@@ -39,19 +39,13 @@ def pattern_to_template(pattern):
     return VARS_PT.sub(template_replacer, pattern)
 
 
-class URIMatch(object):
-    """ represents matched results of uri template """
-    def __init__(self, matchdict, matchlength):
-        self.matchdict = matchdict
-        self.matchlength = matchlength
-
-
 class URITemplateFormatException(Exception):
     """ raised when uri template format error duaring"""
 
 
 class URITemplate(object):
     """ parsing and generating url with patterned """
+
     def __init__(self, tmpl_pattern):
         if tmpl_pattern.endswith('*') and not tmpl_pattern.endswith('/*'):
             raise URITemplateFormatException('wildcard must be after slash.')
@@ -67,7 +61,8 @@ class URITemplate(object):
             return matched
         matchlength = len(matched.group(0))
         matchdict = matched.groupdict()
-        return URIMatch(matchdict, matchlength)
+        return {"matchdict": matchdict,
+                "matchlength": matchlength}
 
     def substitute(self, values):
         """ generate url with url template"""

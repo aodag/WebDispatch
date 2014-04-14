@@ -7,5 +7,9 @@ class URLMapperMixin(object):
     """
     def generate_url(self, name, **kwargs):
         """ generate url with urlgenerator used by urldispatch"""
-        mapper = self.environ['webdispatch.urlgenerator']
-        return mapper.generate(name, **kwargs)
+        return self.urlmapper.generate(name, **kwargs)
+
+    @property
+    def urlmapper(self):
+        """ get urlmapper object from wsgi environ """
+        return self.environ['webdispatch.urlgenerator']
