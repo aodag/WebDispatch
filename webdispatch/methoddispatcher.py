@@ -30,6 +30,10 @@ class MethodDispatcher(DispatchBase):
 def action_handler_adapter(handler_cls, action_name):
     """ wraps class to wsgi application dispathing action"""
 
+    if not hasattr(handler_cls(), action_name):
+        message = "{0} does'nt have attr:{1}".format(handler_cls, action_name)
+        raise ValueError(message)
+
     def wsgiapp(environ, start_response):
         """ inner app """
         handler = handler_cls()

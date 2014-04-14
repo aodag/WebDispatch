@@ -1,6 +1,6 @@
 """ tests for webdispatch.methoddispatcher"""
-from testfixtures import compare
-from webdispatch import testing
+import mock
+from testfixtures import compare, ShouldRaise
 
 
 class TestMethodDispatcher(object):
@@ -28,7 +28,7 @@ class TestMethodDispatcher(object):
         """ test basic using"""
         app = self._make_one(get=lambda environ, start_response: ["get"])
         environ = self._setup_environ()
-        start_response = testing.DummyStartResponse()
+        start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, ["get"])
 
@@ -36,10 +36,11 @@ class TestMethodDispatcher(object):
         """ test not found views"""
         app = self._make_one(get=lambda environ, start_response: ["get"])
         environ = self._setup_environ(REQUEST_METHOD='POST')
-        start_response = testing.DummyStartResponse()
+        start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, [b"Method Not Allowed"])
-        compare(start_response.status, '405 Method Not Allowed')
+        start_response.assert_called_with(
+            '405 Method Not Allowed', [('Content-type', 'text/plain')])
 
 
 class TestActionHandlerAdapter(object):
@@ -67,18 +68,44 @@ class TestActionHandlerAdapter(object):
             def __init__(self):
                 self.message = b"Hello"
 
+            def get_message(self):
+                """ get message to return body"""
+                return self.message
+
             def action(self, _, start_response):
                 """ dummy action """
                 start_response("200 OK",
                                [("Content-type", "text/plain")])
-                return [self.message]
+                return [self.get_message()]
 
         target = self._call_fut(DummyAction, "action")
         environ = self._setup_environ(REQUEST_METHOD='POST')
-        start_response = testing.DummyStartResponse()
+        start_response = mock.Mock()
         result = target(environ, start_response)
         compare(result, [b"Hello"])
-        compare(start_response.status, '200 OK')
+        start_response.assert_called_with(
+            '200 OK', [('Content-type', 'text/plain')])
+
+    def test_invalid_name(self):
+        """ test basic using """
+
+        class DummyAction(object):
+            """ dummy action class"""
+            def __init__(self):
+                self.message = b"Hello"
+
+            def get_message(self):
+                """ get message to return body"""
+                return self.message
+
+            def action(self, _, start_response):
+                """ dummy action """
+                start_response("200 OK",
+                               [("Content-type", "text/plain")])
+                return [self.get_message()]
+
+        with ShouldRaise(ValueError):
+            self._call_fut(DummyAction, "actionx")
 
 
 class TestActionDispatcher(object):
@@ -113,7 +140,7 @@ class TestActionDispatcher(object):
         app.register_app('test_app', test_app)
         routing_args = [(), {'action': 'test_app'}]
         environ = self._setup_environ({'wsgiorg.routing_args': routing_args})
-        start_response = testing.DummyStartResponse()
+        start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, [b"got action"])
 
@@ -123,15 +150,20 @@ class TestActionDispatcher(object):
 
         class DummyHandler(object):
             """ dummy handler """
+
             @staticmethod
-            def test_action(*_):
-                """ dummy action """
+            def get_body():
+                """ get body to return action """
                 return [b"test action"]
+
+            def test_action(self, *_):
+                """ dummy action """
+                return self.get_body()
 
         app.register_actionhandler(DummyHandler)
         routing_args = [(), {'action': 'test_action'}]
         environ = self._setup_environ({'wsgiorg.routing_args': routing_args})
-        start_response = testing.DummyStartResponse()
+        start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, [b"test action"])
 
@@ -144,9 +176,11 @@ class TestActionDispatcher(object):
         routing_args = [(), {'action': 'no_app'}]
         env = {'wsgiorg.routing_args': routing_args}
         environ = self._setup_environ(env)
-        start_response = testing.DummyStartResponse()
+        start_response = mock.Mock()
         result = app(environ, start_response)
-        compare(start_response.status, '404 Not Found')
+        start_response.assert_called_with(
+            '404 Not Found', [('Content-type', 'text/plain')])
+
         compare(result,
                 [b"Not Found ",
                  b"http://127.0.0.1/"])

@@ -50,7 +50,10 @@ class URLGenerator(object):
         """ generate full qualified url for named url pattern with kwargs
         """
         path = self.urlmapper.generate(name, **kwargs)
+        return self.make_full_qualified_url(path)
 
+    def make_full_qualified_url(self, path):
+        """ append application url to path"""
         return self.application_uri.rstrip('/') + '/' + path.lstrip('/')
 
 

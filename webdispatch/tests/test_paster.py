@@ -1,4 +1,5 @@
 """ test for webdispatch.paster """
+import mock
 from testfixtures import compare
 from webdispatch import testing
 
@@ -19,7 +20,7 @@ class TestPaste(object):
     def assert_response_body(self, app, path, expected):
         """ assert body created app on path equals expected"""
         environ = self._make_env(path, '')
-        start_response = testing.DummyStartResponse()
+        start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, expected)
 
