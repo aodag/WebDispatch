@@ -2,8 +2,8 @@
 
 """
 
+from wsgiref.util import application_uri
 from .base import DispatchBase
-from .util import application_uri
 
 
 class MethodDispatcher(DispatchBase):

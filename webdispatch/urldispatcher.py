@@ -2,9 +2,9 @@
 
 """
 from collections import OrderedDict
+from wsgiref.util import application_uri
 
 from .uritemplate import URITemplate
-from .util import application_uri
 from .base import DispatchBase
 
 
