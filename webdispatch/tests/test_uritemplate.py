@@ -47,6 +47,13 @@ class TestPatternToRegex(object):
 
         compare(result, r"^(?P<var1>[\w-]+)$")
 
+    def test_one_typed_var(self):
+        """ test converting including one var"""
+        pattern = "{var1:int}"
+        result = self._call_fut(pattern)
+
+        compare(result, r"^(?P<var1>[\w-]+)$")
+
     def test_two_vars(self):
         """ test converting including two vers"""
         pattern = "{var1}{var2}"
@@ -60,6 +67,37 @@ class TestPatternToRegex(object):
         result = self._call_fut(pattern)
 
         compare(result, r"^/(?P<var1>[\w-]+)/(?P<var2>[\w-]+)$")
+
+
+class TestDetectConverters(object):
+    """ test for webdispatch.urltemplate.detect_converters"""
+
+    @staticmethod
+    def _call_fut(*args, **kwargs):
+        """ call function under test """
+        from webdispatch.uritemplate import detect_converters
+        return detect_converters(*args, **kwargs)
+
+    def test_empty(self):
+        """ test with empty string """
+        pattern = ""
+        result = self._call_fut(pattern, {})
+
+        compare(result, {})
+
+    def test_no_type(self):
+        """ test without specified converter """
+        pattern = "{a}"
+        result = self._call_fut(pattern, {})
+
+        compare(result, {'a': str})
+
+    def test_type(self):
+        """ test with specified converter """
+        pattern = "{a:int}"
+        result = self._call_fut(pattern, {'int': int})
+
+        compare(result, {'a': int})
 
 
 class TestURITemplate(object):
@@ -133,6 +171,35 @@ class TestURITemplate(object):
         result = target.match("a/users/egg")
 
         compare(result["matchdict"], dict(var1="a", var2="egg"))
+
+    def test_match_conveter(self):
+        """ test matching pattern including specified converter """
+        path = "{var1:int}/users/{var2}"
+        target = self._make_one(path)
+        result = target.match("1/users/egg")
+
+        compare(result["matchdict"], dict(var1=1, var2="egg"))
+
+    def test_match_conveter_error(self):
+        """ test matching pattern including specified converter """
+        path = "{var1:int}/users/{var2}"
+        target = self._make_one(path)
+        result = target.match("a/users/egg")
+
+        compare(result, None)
+
+    def test_match_custom_conveter(self):
+        """ test using custom converter """
+        from datetime import datetime
+        converters = {
+            "testing": lambda s: datetime.strptime(s, '%Y%m%d')
+        }
+        path = "{var1}/users/{var2:testing}"
+        target = self._make_one(path, converters=converters)
+        result = target.match("1/users/20140420")
+
+        compare(result["matchdict"],
+                dict(var1="1", var2=datetime(2014, 4, 20)))
 
     def test_substitue(self):
         """ test subtituting vars to pattern """
