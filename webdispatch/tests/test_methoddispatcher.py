@@ -1,6 +1,7 @@
 """ tests for webdispatch.methoddispatcher"""
 import mock
 from testfixtures import compare, ShouldRaise
+from webdispatch.testing import setup_environ
 
 
 class TestMethodDispatcher(object):
@@ -15,19 +16,10 @@ class TestMethodDispatcher(object):
         """ create object under test """
         return self._get_target()(*args, **kwargs)
 
-    @staticmethod
-    def _setup_environ(**kwargs):
-        """ setup basic wsgi environ"""
-        environ = {}
-        from wsgiref.util import setup_testing_defaults
-        setup_testing_defaults(environ)
-        environ.update(kwargs)
-        return environ
-
     def test_it(self):
         """ test basic using"""
         app = self._make_one(get=lambda environ, start_response: ["get"])
-        environ = self._setup_environ()
+        environ = setup_environ()
         start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, ["get"])
@@ -35,7 +27,7 @@ class TestMethodDispatcher(object):
     def test_not_allowed(self):
         """ test not found views"""
         app = self._make_one(get=lambda environ, start_response: ["get"])
-        environ = self._setup_environ(REQUEST_METHOD='POST')
+        environ = setup_environ(REQUEST_METHOD='POST')
         start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, [b"Method Not Allowed"])
@@ -50,15 +42,6 @@ class TestActionHandlerAdapter(object):
         """ call function under test """
         from webdispatch.methoddispatcher import action_handler_adapter
         return action_handler_adapter(*args, **kwargs)
-
-    @staticmethod
-    def _setup_environ(**kwargs):
-        """ setup basic wsgi environ """
-        environ = {}
-        from wsgiref.util import setup_testing_defaults
-        setup_testing_defaults(environ)
-        environ.update(kwargs)
-        return environ
 
     def test_call(self):
         """ test basic using """
@@ -79,7 +62,7 @@ class TestActionHandlerAdapter(object):
                 return [self.get_message()]
 
         target = self._call_fut(DummyAction, "action")
-        environ = self._setup_environ(REQUEST_METHOD='POST')
+        environ = setup_environ(REQUEST_METHOD='POST')
         start_response = mock.Mock()
         result = target(environ, start_response)
         compare(result, [b"Hello"])
@@ -105,15 +88,6 @@ class TestActionDispatcher(object):
         """ create object under test"""
         return self._get_target()(*args, **kwargs)
 
-    @staticmethod
-    def _setup_environ(values):
-        """ setup wsgi environ """
-        environ = {}
-        from wsgiref.util import setup_testing_defaults
-        setup_testing_defaults(environ)
-        environ.update(values)
-        return environ
-
     def test_it(self):
         """ test for basic usage"""
         app = self._make_one()
@@ -124,7 +98,8 @@ class TestActionDispatcher(object):
 
         app.register_app('test_app', test_app)
         routing_args = [(), {'action': 'test_app'}]
-        environ = self._setup_environ({'wsgiorg.routing_args': routing_args})
+        environ = setup_environ()
+        environ.update({'wsgiorg.routing_args': routing_args})
         start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, [b"got action"])
@@ -147,7 +122,8 @@ class TestActionDispatcher(object):
 
         app.register_actionhandler(DummyHandler)
         routing_args = [(), {'action': 'test_action'}]
-        environ = self._setup_environ({'wsgiorg.routing_args': routing_args})
+        environ = setup_environ()
+        environ.update({'wsgiorg.routing_args': routing_args})
         start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, [b"test action"])
@@ -160,7 +136,8 @@ class TestActionDispatcher(object):
                          None)
         routing_args = [(), {'action': 'no_app'}]
         env = {'wsgiorg.routing_args': routing_args}
-        environ = self._setup_environ(env)
+        environ = setup_environ()
+        environ.update(env)
         start_response = mock.Mock()
         result = app(environ, start_response)
         start_response.assert_called_with(
