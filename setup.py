@@ -1,12 +1,13 @@
+import os
 from setuptools import setup, find_packages
 
+__version__ = '1.3'
 tests_require = [
     "pytest",
     "pytest-cov",
     "testfixtures",
     "webtest",
 ]
-import os
 
 here = os.path.dirname(__file__)
 readme = None
@@ -33,7 +34,7 @@ setup(
     author_email="aodagx@gmail.com",
     description="dispatch request on wsgi application.",
     long_description=readme + "\n" + changes,
-    version="1.2",
+    version=__version__,
     test_suite="webdispatch",
     license="MIT",
     install_requires=[],
