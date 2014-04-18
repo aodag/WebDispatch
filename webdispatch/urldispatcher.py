@@ -12,13 +12,15 @@ class URLMapper(object):
     """ find application matched url pattern.
     """
 
-    def __init__(self):
+    def __init__(self, converters=None):
         self.patterns = OrderedDict()
+        self.converters = converters
 
     def add(self, name, pattern):
         """ add url pattern for name
         """
-        self.patterns[name] = URITemplate(pattern)
+        self.patterns[name] = URITemplate(
+            pattern, converters=self.converters)
 
     def lookup(self, path_info):
         """ lookup url match for path_info
@@ -61,10 +63,13 @@ class URLDispatcher(DispatchBase):
     """ dispatch applications with url patterns.
     """
 
-    def __init__(self, urlmapper=None, prefix='', applications=None):
-        super(URLDispatcher, self).__init__(applications=applications)
+    def __init__(self, urlmapper=None, prefix='',
+                 applications=None,
+                 converters=None,
+                 extra_environ=None):
+        super(URLDispatcher, self).__init__(applications=applications, extra_environ=extra_environ)
         if urlmapper is None:
-            self.urlmapper = URLMapper()
+            self.urlmapper = URLMapper(converters=converters)
         else:
             self.urlmapper = urlmapper
 
@@ -80,7 +85,8 @@ class URLDispatcher(DispatchBase):
         return URLDispatcher(
             urlmapper=self.urlmapper,
             prefix=self.prefix + pattern,
-            applications=self.applications)
+            applications=self.applications,
+            extra_environ=self.extra_environ)
 
     def detect_view_name(self, environ):
         """ detect view name from environ """
