@@ -144,6 +144,7 @@ class TestURLDispatcher(object):
         mapper.add.assert_called_with('testing-route', 'a/b')
 
     def test_subroute(self):
+        """ test subroute """
         mapper = object()
         target = self._make_one(urlmapper=mapper,
                                 extra_environ={'testing': 'e'})
@@ -156,6 +157,7 @@ class TestURLDispatcher(object):
                           extra_environ={'testing': 'e'}))
 
     def test_detect_view_name(self):
+        """ test detect_view_name """
         target = self._make_one()
         environ = setup_environ()
         result = target.detect_view_name(environ)
@@ -163,6 +165,7 @@ class TestURLDispatcher(object):
         compare(result, None)
 
     def test_on_view_not_found(self):
+        """ test on_view_not_found """
         target = self._make_one()
         environ = setup_environ()
         start_response = mock.Mock()

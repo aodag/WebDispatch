@@ -63,17 +63,19 @@ class URLDispatcher(DispatchBase):
     """ dispatch applications with url patterns.
     """
 
-    def __init__(self, urlmapper=None, prefix='',
+    def __init__(self,
                  applications=None,
-                 converters=None,
-                 extra_environ=None):
-        super(URLDispatcher, self).__init__(applications=applications, extra_environ=extra_environ)
-        if urlmapper is None:
-            self.urlmapper = URLMapper(converters=converters)
+                 extra_environ=None,
+                 **kwargs):
+        super(URLDispatcher, self).__init__(
+            applications=applications,
+            extra_environ=extra_environ)
+        converters = kwargs.get('converters')
+        if 'urlmapper' in kwargs:
+            self.urlmapper = kwargs['urlmapper']
         else:
-            self.urlmapper = urlmapper
-
-        self.prefix = prefix
+            self.urlmapper = URLMapper(converters=converters)
+        self.prefix = kwargs.get('prefix', '')
 
     def add_url(self, name, pattern, application):
         """ add url pattern dispatching to application"""
