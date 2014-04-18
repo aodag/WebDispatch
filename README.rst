@@ -34,7 +34,7 @@ invoke dispatcher as WSGI Application::
   >>> req = Request.blank('/hello/webdispatch')
   >>> res = req.get_response(dispatcher)
   >>> res.body
-  'Hello, webdispatch'
+  b'Hello, webdispatch'
 
 
 Wildcard
@@ -51,7 +51,33 @@ and remained paths becomes new path_info.
   >>> req = Request.blank('/with_pathinfo/this/is/pathinfo')
   >>> res = req.get_response(dispatcher)
   >>> res.body
-  'Hello, this/is/pathinfo'
+  b'Hello, this/is/pathinfo'
+
+Type Converter
+++++++++++++++++++
+
+You can specify converter with varname below ":".
+
+::
+
+  >>> @wsgify
+  ... def add(request):
+  ...     result = request.urlvars['v1'] + request.urlvars['v2']
+  ...     return "result, %d" % result
+  >>> dispatcher.add_url('add', '/add/{v1:int}/{v2:int}', add)
+  >>> req = Request.blank('/add/1/2')
+  >>> res = req.get_response(dispatcher)
+  >>> res.body
+  b'result, 3'
+
+default converters are defined as bellow::
+
+   DEFAULT_CONVERTERS = {
+       'int': int,
+       'date': lambda s: datetime.strptime(s, '%Y-%m-%d'),
+       'date_ym': lambda s: datetime.strptime(s, '%Y-%m'),
+   }
+
 
 Action Dispatch
 -------------------------------------------------
@@ -80,7 +106,7 @@ invoke wsgi appclication.::
   >>> req = Request.blank('/actions/greeting')
   >>> res = req.get_response(dispatcher)
   >>> res.body
-  'Hello'
+  b'Hello'
 
 Method Dispatch
 -------------------------------------
@@ -110,7 +136,7 @@ invoke WSGI application::
   >>> req = Request.blank('/')
   >>> res = req.get_response(restapp)
   >>> res.body
-  'Get Hello'
+  b'Get Hello'
 
 extra_environ
 ---------------------------

@@ -2,6 +2,7 @@
 parsing and generating url patterns
 """
 
+from datetime import datetime
 import re
 import string
 
@@ -12,6 +13,8 @@ META_CHARS = ("\\", ".", "^", "$", "*", "+", "|", "?", "(", ")", "[", "]")
 
 DEFAULT_CONVERTERS = {
     'int': int,
+    'date': lambda s: datetime.strptime(s, '%Y-%m-%d'),
+    'date_ym': lambda s: datetime.strptime(s, '%Y-%m'),
 }
 
 
