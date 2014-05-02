@@ -3,7 +3,6 @@ python: 3.3
 env:
   matrix:
     - TOXENV=py27
-    - TOXENV=pypy
     - TOXENV=py33
     - TOXENV=py34
     - TOXENV=coverage
