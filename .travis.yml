@@ -10,7 +10,7 @@ env:
     - TOXENV=pylint
 
 install:
-  - pip install tox
+  - pip install tox -f wheelhouse
   - if test "$TOXENV" = coverage ; then pip install python-coveralls ; fi
 script: tox
 after_success:

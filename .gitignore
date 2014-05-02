@@ -18,7 +18,6 @@ env
 env27
 .env
 .env33
-*.whl
 .env
 *.egg
 *,cover
