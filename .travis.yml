@@ -9,10 +9,6 @@ env:
     - TOXENV=flake8
     - TOXENV=pylint
 
-before_install:
-  - if test "$TOXENV" = py34 ; then sudo apt-get update ; fi
-  - if test "$TOXENV" = py34 ; then sudo apt-get install python3.4 python3.4-dev ; fi
-
 install:
   - pip install tox
   - if test "$TOXENV" = coverage ; then pip install python-coveralls ; fi
