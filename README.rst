@@ -7,6 +7,10 @@ WebDispatch
 .. image:: https://coveralls.io/repos/aodag/WebDispatch/badge.png?branch=master 
    :target: https://coveralls.io/r/aodag/WebDispatch?branch=master 
 
+.. image:: https://pypip.in/wheel/WebDispatch/badge.png
+    :target: https://pypi.python.org/pypi/WebDispatch/
+    :alt: Wheel Status
+
 WebDispatch is dispatcher collection for wsgi application. 
 That has no dependency to exsiting frameworks, but works fine with `WebOb <http://www.webob.org>`_.
 
