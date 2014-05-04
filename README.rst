@@ -48,6 +48,8 @@ You can use wildcard after last slash.
 Pattern with wildcard consumes paths before the wildcard, (and make that new script_name,)
 and remained paths becomes new path_info.
 
+::
+
   >>> @wsgify
   ... def with_pathinfo(request):
   ...     return "Hello, %s" % request.path_info
