@@ -22,7 +22,8 @@ class DispatchBase(object):
             def dec(app):
                 """ inner decorator for register app """
                 assert app is not None
-                return self.register_app(name, app)
+                self.register_app(name, app)
+                return app
             return dec
         self.applications[name] = app
 

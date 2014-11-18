@@ -47,7 +47,9 @@ class TestMethodDispatcher(object):
         """ test registering app"""
         app = self._make_one()
         dec = app.register_app("get")
-        dec(lambda environ, start_response: ["get"])
+        controller = lambda environ, start_response: ["get"]
+        ret = dec(controller)
+        compare(ret, controller)
         environ = setup_environ()
         start_response = mock.Mock()
         result = app(environ, start_response)
