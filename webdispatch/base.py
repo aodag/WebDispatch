@@ -16,8 +16,15 @@ class DispatchBase(object):
         else:
             self.extra_environ = extra_environ
 
-    def register_app(self, name, app):
+    def register_app(self, name, app=None):
         """ register dispatchable wsgi application"""
+        if app is None:
+            def dec(app):
+                """ inner decorator for register app """
+                assert app is not None
+                self.register_app(name, app)
+                return app
+            return dec
         self.applications[name] = app
 
     def get_extra_environ(self):

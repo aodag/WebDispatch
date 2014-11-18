@@ -34,6 +34,27 @@ class TestMethodDispatcher(object):
         start_response.assert_called_with(
             '405 Method Not Allowed', [('Content-type', 'text/plain')])
 
+    def test_register_app(self):
+        """ test registering app"""
+        app = self._make_one()
+        app.register_app("get", lambda environ, start_response: ["get"])
+        environ = setup_environ()
+        start_response = mock.Mock()
+        result = app(environ, start_response)
+        compare(result, ["get"])
+
+    def test_register_app_decorator(self):
+        """ test registering app"""
+        app = self._make_one()
+        dec = app.register_app("get")
+        controller = lambda environ, start_response: ["get"]
+        ret = dec(controller)
+        compare(ret, controller)
+        environ = setup_environ()
+        start_response = mock.Mock()
+        result = app(environ, start_response)
+        compare(result, ["get"])
+
 
 class TestActionHandlerAdapter(object):
     """ test for webdispatch.methoddispatcher.action_handler_adapter"""
