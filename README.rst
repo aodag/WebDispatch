@@ -119,16 +119,22 @@ Method Dispatch
 
 dispatch by HTTP METHOD restfully.
 
-sample wsgi app::
+use ``register_app`` decorator::
 
-  >>> @wsgify
+  >>> from webdispatch import MethodDispatcher
+  >>> restapp = MethodDispatcher()
+  >>> @restapp.register('get')
+  ... @wsgify
   ... def get_hello(request):
   ...    return "Get Hello"
-  >>> @wsgify
+  >>> @restapp.register('post')
+  ... @wsgify
   ... def post_hello(request):
   ...    return "Post Hello"
 
-create and configure::
+
+
+or use ``registe_app`` method::
 
   >>> from webdispatch import MethodDispatcher
   >>> restapp = MethodDispatcher()
