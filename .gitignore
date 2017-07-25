@@ -22,3 +22,4 @@ env27
 *.egg
 *,cover
 htmlcov
+venv
