@@ -9,6 +9,8 @@ tests_require = [
     "webtest",
     "mock",
     "python-coveralls",
+    "flake8",
+    "pylint",
 ]
 
 here = os.path.dirname(__file__)
