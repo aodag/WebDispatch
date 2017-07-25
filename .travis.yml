@@ -1,7 +1,7 @@
 sudo: false
 language: python
 python:
-  - pypy
+  # - pypy
   - 3.4
   - 3.5
   - 3.6
@@ -17,5 +17,7 @@ jobs:
       env: TOXENV=flake8
     - python: 3.6
       env: TOXENV=pylint
+    - python: 3.6
+      env: TOXENV=mypy
 after_success:
   - if test "$TOXENV" = coverage ; then pip install coveralls; coveralls ; fi
