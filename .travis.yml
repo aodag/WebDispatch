@@ -1,17 +1,15 @@
 language: python
-python: 3.3
-env:
-  matrix:
-    - TOXENV=py27
-    - TOXENV=py33
-    - TOXENV=py34
-    - TOXENV=coverage
-    - TOXENV=flake8
-    - TOXENV=pylint
-
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
 install:
-  - pip install tox -f wheelhouse
-  - if test "$TOXENV" = coverage ; then pip install python-coveralls ; fi
-script: tox
+  - pip install -e .[testing] -c constraints.txt
+script:
+  - flake8 webdispatch
+  - pylint webdispatch
+  - py.test webdispatch --cov=webdispatch --cov-report=term-missing
 after_success:
   - if test "$TOXENV" = coverage ; then coveralls ; fi

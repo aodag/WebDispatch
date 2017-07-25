@@ -32,7 +32,7 @@ def template_replacer(matched):
 
 def pattern_to_regex(pattern):
     """ convert url patten to regex """
-    if len(pattern) > 0 and pattern[-1] == "*":
+    if pattern and pattern[-1] == "*":
         pattern = pattern[:-1]
         end = ""
     else:
