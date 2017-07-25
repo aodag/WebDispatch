@@ -4,6 +4,10 @@ from testfixtures import compare, ShouldRaise
 from webdispatch.testing import setup_environ
 
 
+def dummy_get_app(environ, start_response):
+    return [b"get"]
+
+
 class TestMethodDispatcher(object):
     """ test for webdispatch.methoddispatcher.MethodDispatcher"""
     @staticmethod
@@ -18,7 +22,7 @@ class TestMethodDispatcher(object):
 
     def test_it(self):
         """ test basic using"""
-        app = self._make_one(get=lambda environ, start_response: ["get"])
+        app = self._make_one(get=dummy_get_app)
         environ = setup_environ()
         start_response = mock.Mock()
         result = app(environ, start_response)
@@ -26,7 +30,7 @@ class TestMethodDispatcher(object):
 
     def test_not_allowed(self):
         """ test not found views"""
-        app = self._make_one(get=lambda environ, start_response: ["get"])
+        app = self._make_one(get=dummy_get_app)
         environ = setup_environ(REQUEST_METHOD='POST')
         start_response = mock.Mock()
         result = app(environ, start_response)
@@ -37,7 +41,7 @@ class TestMethodDispatcher(object):
     def test_register_app(self):
         """ test registering app"""
         app = self._make_one()
-        app.register_app("get", lambda environ, start_response: ["get"])
+        app.register_app("get", dummy_get_app)
         environ = setup_environ()
         start_response = mock.Mock()
         result = app(environ, start_response)
@@ -47,7 +51,7 @@ class TestMethodDispatcher(object):
         """ test registering app"""
         app = self._make_one()
         dec = app.register_app("get")
-        controller = lambda environ, start_response: ["get"]
+        controller = dummy_get_app
         ret = dec(controller)
         compare(ret, controller)
         environ = setup_environ()
