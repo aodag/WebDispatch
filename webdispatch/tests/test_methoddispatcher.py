@@ -4,7 +4,7 @@ from testfixtures import compare, ShouldRaise
 from webdispatch.testing import setup_environ
 
 
-def dummy_get_app(*args):
+def dummy_get_app(*dummy):
     """ dummy app """
     return ["get"]
 
