@@ -6,7 +6,7 @@ python:
   - 3.5
   - 3.6
 install:
-  - pip install -e .[testing] -f wheelhouse -c constraints.txt
+  - pip install -e .[testing] -c constraints.txt
 script:
   - flake8 webdispatch
   - pylint webdispatch
