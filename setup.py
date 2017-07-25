@@ -7,6 +7,8 @@ tests_require = [
     "pytest-cov",
     "testfixtures",
     "webtest",
+    "mock",
+    "python-coveralls",
 ]
 
 here = os.path.dirname(__file__)
