@@ -1,0 +1,4 @@
+[tool.towncrier]
+package = "webdispatch"
+filename = "CHANGES.txt"
+directory = "newsfragments"

@@ -1,7 +1,6 @@
 import os
 from setuptools import setup, find_packages
 
-__version__ = '1.3'
 tests_require = [
     "pytest",
     "pytest-cov",
@@ -38,13 +37,13 @@ setup(
     author_email="aodagx@gmail.com",
     description="dispatch request on wsgi application.",
     long_description=readme + "\n" + changes,
-    version=__version__,
     test_suite="webdispatch",
     license="MIT",
     install_requires=[],
     tests_require=tests_require,
     extras_require={
         "testing": tests_require,
+        "dev": tests_require + ["towncrier"],
     },
     url='http://github.com/aodag/WebDispatch',
     packages=find_packages(),
