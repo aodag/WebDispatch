@@ -11,6 +11,7 @@ tests_require = [
     "flake8",
     "pylint",
     "mypy",
+    "mypy_extensions",
 ]
 
 here = os.path.dirname(__file__)
