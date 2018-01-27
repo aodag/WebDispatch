@@ -5,32 +5,51 @@ parsing and generating url patterns
 from datetime import datetime
 import re
 import string
+from typing import (  # noqa pylint: disable=unused-import
+    Any,
+    Dict,
+    Callable,
+    Tuple,
+)
+from mypy_extensions import TypedDict
 
 VARS_PT = re.compile(r"{(?P<varname>[a-zA-Z0-9_]+)"
                      r"(:(?P<converter>[a-zA-Z0-9_]+))?}",
                      re.X)
-META_CHARS = ("\\", ".", "^", "$", "*", "+", "|", "?", "(", ")", "[", "]")
+META_CHARS = (
+    "\\",
+    ".",
+    "^",
+    "$",
+    "*",
+    "+",
+    "|",
+    "?",
+    "(",
+    ")",
+    "[",
+    "]")  # type: Tuple[str, ...]
 
 DEFAULT_CONVERTERS = {
     'int': int,
     'date': lambda s: datetime.strptime(s, '%Y-%m-%d'),
     'date_ym': lambda s: datetime.strptime(s, '%Y-%m'),
-}
+}  # type: Dict[str, Callable]
 
 
-def regex_replacer(matched):
+def regex_replacer(matched) -> str:
     """ replace url placeholder to regex pattern"""
     values = matched.groupdict()
     return "(?P<" + values['varname'] + r">[\w-]+)"
 
 
-def template_replacer(matched):
+def template_replacer(matched) -> str:
     """ replace url placeholder to template interpolation"""
     values = matched.groupdict()
     return "${" + values['varname'] + "}"
 
 
-def pattern_to_regex(pattern):
+def pattern_to_regex(pattern: str) -> str:
     """ convert url patten to regex """
     if pattern and pattern[-1] == "*":
         pattern = pattern[:-1]
@@ -43,12 +62,14 @@ def pattern_to_regex(pattern):
     return "^" + VARS_PT.sub(regex_replacer, pattern) + end
 
 
-def pattern_to_template(pattern):
+def pattern_to_template(pattern: str) -> str:
     """ convert url pattern to string template"""
     return VARS_PT.sub(template_replacer, pattern)
 
 
-def detect_converters(pattern, converter_dict, default=str):
+def detect_converters(pattern: str,
+                      converter_dict: Dict[str, Callable],
+                      default: Callable = str):
     """ detect pairs of varname and converter from pattern"""
     converters = {}
     for matched in VARS_PT.finditer(pattern):
@@ -63,11 +84,16 @@ class URITemplateFormatException(Exception):
     """ raised when uri template format error duaring"""
 
 
+MATCH_RESULT_TYPE = TypedDict(
+    "MATCH_RESULT_TYPE",
+    {"matchdict": Dict[str, Any], "matchlength": int})
+
+
 class URITemplate(object):
     """ parsing and generating url with patterned """
 
-    def __init__(self, tmpl_pattern,
-                 converters=None):
+    def __init__(self, tmpl_pattern: str,
+                 converters=None) -> None:
         if tmpl_pattern.endswith('*') and not tmpl_pattern.endswith('/*'):
             raise URITemplateFormatException('wildcard must be after slash.')
 
@@ -79,11 +105,11 @@ class URITemplate(object):
         self.converters = detect_converters(
             tmpl_pattern, converters)
 
-    def match(self, path_info):
+    def match(self, path_info: str) -> MATCH_RESULT_TYPE:
         """ parse path_info and detect urlvars of url pattern """
         matched = self.regex.match(path_info)
         if matched is None:
-            return matched
+            return None
         matchlength = len(matched.group(0))
         matchdict = matched.groupdict()
 
@@ -95,7 +121,7 @@ class URITemplate(object):
         return {"matchdict": matchdict,
                 "matchlength": matchlength}
 
-    def convert_values(self, matchdict):
+    def convert_values(self, matchdict: Dict[str, str]) -> Dict[str, Any]:
         """ convert values of ``matchdict``
         with converter this object has."""
 
@@ -105,6 +131,6 @@ class URITemplate(object):
             converted[varname] = converter(value)
         return converted
 
-    def substitute(self, values):
+    def substitute(self, values: Dict[str, Any]) -> str:
         """ generate url with url template"""
         return self.template.substitute(values)

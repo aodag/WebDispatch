@@ -3,7 +3,14 @@
 """
 from collections import OrderedDict
 from wsgiref.util import application_uri
-
+from typing import (  # noqa
+    Any,
+    Callable,
+    Dict,
+    List,
+    Tuple,
+    Iterable,
+)
 from .uritemplate import URITemplate
 from .base import DispatchBase
 
@@ -16,13 +23,13 @@ class URLMapper(object):
         self.patterns = OrderedDict()
         self.converters = converters
 
-    def add(self, name, pattern):
+    def add(self, name: str, pattern: str) -> None:
         """ add url pattern for name
         """
         self.patterns[name] = URITemplate(
             pattern, converters=self.converters)
 
-    def lookup(self, path_info):
+    def lookup(self, path_info: str) -> Dict[str, Any]:
         """ lookup url match for path_info
         """
         for name, pattern in self.patterns.items():
@@ -31,8 +38,9 @@ class URLMapper(object):
                 continue
             match["name"] = name
             return match
+        return None
 
-    def generate(self, name, **kwargs):
+    def generate(self, name: str, **kwargs: Dict[str, str]) -> str:
         """ generate url for named url pattern with kwargs
         """
         template = self.patterns[name]
@@ -64,25 +72,25 @@ class URLDispatcher(DispatchBase):
     """
 
     def __init__(self,
-                 applications=None,
-                 extra_environ=None,
-                 **kwargs):
+                 applications=None,  # type: List[Callable]
+                 extra_environ=None,  # type: Dict[str, Any]
+                 **kwargs) -> None:
         super(URLDispatcher, self).__init__(
             applications=applications,
             extra_environ=extra_environ)
         converters = kwargs.get('converters')
         if 'urlmapper' in kwargs:
-            self.urlmapper = kwargs['urlmapper']
+            self.urlmapper = kwargs['urlmapper']  # type: URLMapper
         else:
             self.urlmapper = URLMapper(converters=converters)
-        self.prefix = kwargs.get('prefix', '')
+        self.prefix = kwargs.get('prefix', '')  # type: str
 
-    def add_url(self, name, pattern, application):
+    def add_url(self, name: str, pattern: str, application: Callable) -> None:
         """ add url pattern dispatching to application"""
         self.urlmapper.add(name, self.prefix + pattern)
         self.register_app(name, application)
 
-    def add_subroute(self, pattern):
+    def add_subroute(self, pattern: str) -> DispatchBase:
         """ create new URLDispatcher routed by pattern """
         return URLDispatcher(
             urlmapper=self.urlmapper,
@@ -90,7 +98,7 @@ class URLDispatcher(DispatchBase):
             applications=self.applications,
             extra_environ=self.extra_environ)
 
-    def detect_view_name(self, environ):
+    def detect_view_name(self, environ: Dict[str, Any]) -> str:
         """ detect view name from environ """
         script_name = environ.get('SCRIPT_NAME', '')
         path_info = environ.get('PATH_INFO', '')
@@ -99,9 +107,11 @@ class URLDispatcher(DispatchBase):
             return None
 
         extra_path_info = path_info[match["matchlength"]:]
-        pos_args = []
+        pos_args = []  # type: List[str]
         named_args = match["matchdict"]
-        cur_pos, cur_named = environ.get('wsgiorg.routing_args', ((), {}))
+
+        routing_args = environ.get('wsgiorg.routing_args', ((), {}))
+        (cur_pos, cur_named) = routing_args
         new_pos = list(cur_pos) + list(pos_args)
         new_named = cur_named.copy()
         new_named.update(named_args)
@@ -114,7 +124,11 @@ class URLDispatcher(DispatchBase):
 
         return match["name"]
 
-    def on_view_not_found(self, environ, start_response):
+    def on_view_not_found(
+            self,
+            environ: Dict[str, Any],
+            start_response: Callable[[str, List[Tuple[str, str]]], None],
+    ) -> Iterable[bytes]:
         """ called when views not found"""
         start_response('404 Not Found', [('Content-type', 'text/plain')])
         return [b'Not found']
