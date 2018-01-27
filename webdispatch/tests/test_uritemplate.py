@@ -127,8 +127,8 @@ class TestURITemplate(object):
 
         result = target.match(path)
 
-        compare(result["matchdict"], dict())
-        compare(result["matchlength"], 0)
+        compare(result.matchdict, dict())
+        compare(result.matchlength, 0)
 
     def test_wildcard(self):
         """ test matching pattern including wildcard"""
@@ -136,8 +136,8 @@ class TestURITemplate(object):
         target = self._make_one(path)
         result = target.match("hoge/egg/bacon")
 
-        compare(result["matchdict"], dict(var1="egg"))
-        compare(result["matchlength"], 9)
+        compare(result.matchdict, dict(var1="egg"))
+        compare(result.matchlength, 9)
 
     def test_match_no_match(self):
         """ test no mathing"""
@@ -153,8 +153,8 @@ class TestURITemplate(object):
         target = self._make_one(path)
         result = target.match("a")
 
-        compare(result["matchdict"], dict(var1="a"))
-        compare(result["matchlength"], 1)
+        compare(result.matchdict, dict(var1="a"))
+        compare(result.matchlength, 1)
 
     def test_match_match_complex_word(self):
         """ test matching a string"""
@@ -162,7 +162,7 @@ class TestURITemplate(object):
         target = self._make_one(path)
         result = target.match("abc")
 
-        compare(result["matchdict"], dict(var1="abc"))
+        compare(result.matchdict, dict(var1="abc"))
 
     def test_match_match_many(self):
         """ test matching pattern including two vars """
@@ -170,7 +170,7 @@ class TestURITemplate(object):
         target = self._make_one(path)
         result = target.match("a/users/egg")
 
-        compare(result["matchdict"], dict(var1="a", var2="egg"))
+        compare(result.matchdict, dict(var1="a", var2="egg"))
 
     def test_match_conveter(self):
         """ test matching pattern including specified converter """
@@ -178,7 +178,7 @@ class TestURITemplate(object):
         target = self._make_one(path)
         result = target.match("1/users/egg")
 
-        compare(result["matchdict"], dict(var1=1, var2="egg"))
+        compare(result.matchdict, dict(var1=1, var2="egg"))
 
     def test_match_conveter_error(self):
         """ test matching pattern including specified converter """
@@ -198,7 +198,7 @@ class TestURITemplate(object):
         target = self._make_one(path, converters=converters)
         result = target.match("1/users/20140420")
 
-        compare(result["matchdict"],
+        compare(result.matchdict,
                 dict(var1="1", var2=datetime(2014, 4, 20)))
 
     def test_substitue(self):

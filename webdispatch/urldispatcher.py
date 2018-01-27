@@ -11,7 +11,7 @@ from typing import (  # noqa
     Tuple,
     Iterable,
 )
-from .uritemplate import URITemplate
+from .uritemplate import URITemplate, MatchResult
 from .base import DispatchBase
 
 
@@ -29,14 +29,14 @@ class URLMapper(object):
         self.patterns[name] = URITemplate(
             pattern, converters=self.converters)
 
-    def lookup(self, path_info: str) -> Dict[str, Any]:
+    def lookup(self, path_info: str) -> MatchResult:
         """ lookup url match for path_info
         """
         for name, pattern in self.patterns.items():
             match = pattern.match(path_info)
             if match is None:
                 continue
-            match["name"] = name
+            match.name = name
             return match
         return None
 
@@ -106,23 +106,22 @@ class URLDispatcher(DispatchBase):
         if match is None:
             return None
 
-        extra_path_info = path_info[match["matchlength"]:]
+        splited = match.split_path_info(path_info)
+        extra_path_info = splited[1]
         pos_args = []  # type: List[str]
-        named_args = match["matchdict"]
 
         routing_args = environ.get('wsgiorg.routing_args', ((), {}))
         (cur_pos, cur_named) = routing_args
         new_pos = list(cur_pos) + list(pos_args)
-        new_named = cur_named.copy()
-        new_named.update(named_args)
+        new_named = match.new_named_args(cur_named)
         environ['wsgiorg.routing_args'] = (new_pos, new_named)
         environ['webdispatch.urlmapper'] = self.urlmapper
         urlgenerator = URLGenerator(environ, self.urlmapper)
         environ['webdispatch.urlgenerator'] = urlgenerator
-        environ['SCRIPT_NAME'] = script_name + path_info[:match["matchlength"]]
+        environ['SCRIPT_NAME'] = script_name + splited[0]
         environ['PATH_INFO'] = extra_path_info
 
-        return match["name"]
+        return match.name
 
     def on_view_not_found(
             self,

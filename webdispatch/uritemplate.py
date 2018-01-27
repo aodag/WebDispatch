@@ -11,7 +11,6 @@ from typing import (  # noqa pylint: disable=unused-import
     Callable,
     Tuple,
 )
-from mypy_extensions import TypedDict
 
 VARS_PT = re.compile(r"{(?P<varname>[a-zA-Z0-9_]+)"
                      r"(:(?P<converter>[a-zA-Z0-9_]+))?}",
@@ -84,9 +83,22 @@ class URITemplateFormatException(Exception):
     """ raised when uri template format error duaring"""
 
 
-MATCH_RESULT_TYPE = TypedDict(
-    "MATCH_RESULT_TYPE",
-    {"matchdict": Dict[str, Any], "matchlength": int})
+class MatchResult:
+    """ result of parsing url """
+    def __init__(self, matchdict: Dict[str, Any], matchlength: int) -> None:
+        self.name = None  # type: str
+        self.matchdict = matchdict
+        self.matchlength = matchlength
+
+    def new_named_args(self, cur_named_args: Dict[str, Any]) -> Dict[str, Any]:
+        """ create new named args updating current name args"""
+        named_args = cur_named_args.copy()
+        named_args.update(self.matchdict)
+        return named_args
+
+    def split_path_info(self, path_info: str) -> Tuple[str, str]:
+        """ split path_info to new script_name and new path_info"""
+        return path_info[:self.matchlength], path_info[self.matchlength:]
 
 
 class URITemplate(object):
@@ -105,7 +117,7 @@ class URITemplate(object):
         self.converters = detect_converters(
             tmpl_pattern, converters)
 
-    def match(self, path_info: str) -> MATCH_RESULT_TYPE:
+    def match(self, path_info: str) -> MatchResult:
         """ parse path_info and detect urlvars of url pattern """
         matched = self.regex.match(path_info)
         if matched is None:
@@ -118,8 +130,8 @@ class URITemplate(object):
         except ValueError:
             return None
 
-        return {"matchdict": matchdict,
-                "matchlength": matchlength}
+        return MatchResult(matchdict,
+                           matchlength)
 
     def convert_values(self, matchdict: Dict[str, str]) -> Dict[str, Any]:
         """ convert values of ``matchdict``

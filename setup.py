@@ -40,9 +40,7 @@ setup(
     long_description=readme + "\n" + changes,
     test_suite="webdispatch",
     license="MIT",
-    install_requires=[
-        "mypy_extensions",
-    ],
+    install_requires=[],
     tests_require=tests_require,
     extras_require={
         "testing": tests_require,
