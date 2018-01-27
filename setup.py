@@ -11,7 +11,6 @@ tests_require = [
     "flake8",
     "pylint",
     "mypy",
-    "mypy_extensions",
 ]
 
 here = os.path.dirname(__file__)
@@ -41,7 +40,9 @@ setup(
     long_description=readme + "\n" + changes,
     test_suite="webdispatch",
     license="MIT",
-    install_requires=[],
+    install_requires=[
+        "mypy_extensions",
+    ],
     tests_require=tests_require,
     extras_require={
         "testing": tests_require,
