@@ -51,18 +51,18 @@ class URLGenerator(object):
     """ generate url form parameters and url patterns.
     """
 
-    def __init__(self, environ, urlmapper):
+    def __init__(self, environ: Dict[str, Any], urlmapper: URLMapper) -> None:
         self.environ = environ
         self.urlmapper = urlmapper
         self.application_uri = application_uri(environ)
 
-    def generate(self, name, **kwargs):
+    def generate(self, name: str, **kwargs):
         """ generate full qualified url for named url pattern with kwargs
         """
         path = self.urlmapper.generate(name, **kwargs)
         return self.make_full_qualified_url(path)
 
-    def make_full_qualified_url(self, path):
+    def make_full_qualified_url(self, path: str) -> str:
         """ append application url to path"""
         return self.application_uri.rstrip('/') + '/' + path.lstrip('/')
 
@@ -72,7 +72,7 @@ class URLDispatcher(DispatchBase):
     """
 
     def __init__(self,
-                 applications=None,  # type: List[Callable]
+                 applications=None,  # type: Dict[str, Callable]
                  extra_environ=None,  # type: Dict[str, Any]
                  **kwargs) -> None:
         super(URLDispatcher, self).__init__(
