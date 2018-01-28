@@ -1,0 +1,4 @@
+drop shortcut importing ``webdispatch.URLDispatcher``, ``webdispatch.ActionDispatcher``
+and ``webdispatch.MethodDispatcher``.
+use ``webdispatch.urldispatcher.URLDispatcher``, ``webdispatch.methoddispatcher.ActionDispatcher``
+and ``webdispatch.methoddispatcher.MethodDispatcher``.
