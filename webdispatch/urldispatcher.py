@@ -1,7 +1,6 @@
 """ urldispatcher
 
 """
-from abc import ABC, abstractmethod
 from collections import OrderedDict
 from wsgiref.util import application_uri
 from typing import (  # noqa
@@ -20,7 +19,7 @@ class URLMapper(object):
     """ find application matched url pattern.
     """
 
-    def __init__(self, converters: Dict[str, Callable]=None):
+    def __init__(self, converters: Dict[str, Callable] = None):
         self.patterns = OrderedDict()
         self.converters = converters
 
@@ -74,11 +73,11 @@ class URLDispatcher(DispatchBase):
 
     def __init__(self,
                  *,
-                 applications: Dict[str, Callable]=None,
-                 extra_environ: Dict[str, Any]=None,
-                 converters: Dict[str, Callable]=None,
-                 urlmapper: URLMapper=None,
-                 prefix: str="") -> None:
+                 applications: Dict[str, Callable] = None,
+                 extra_environ: Dict[str, Any] = None,
+                 converters: Dict[str, Callable] = None,
+                 urlmapper: URLMapper = None,
+                 prefix: str = "") -> None:
         super(URLDispatcher, self).__init__(
             applications=applications,
             extra_environ=extra_environ)

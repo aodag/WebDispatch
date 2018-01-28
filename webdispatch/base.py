@@ -8,8 +8,8 @@ class DispatchBase(object):
 
     def __init__(
             self,
-            applications: Dict[str, Callable]=None,
-            extra_environ: Dict[str, Any]=None) -> None:
+            applications: Dict[str, Callable] = None,
+            extra_environ: Dict[str, Any] = None) -> None:
 
         if applications is None:
             self.applications = {}  # type: Dict[str, Callable]
@@ -20,7 +20,7 @@ class DispatchBase(object):
         else:
             self.extra_environ = extra_environ
 
-    def register_app(self, name: str, app: Callable=None) -> Callable:
+    def register_app(self, name: str, app: Callable = None) -> Callable:
         """ register dispatchable wsgi application"""
         if app is None:
             def dec(app):
