@@ -10,6 +10,7 @@ tests_require = [
     "python-coveralls",
     "flake8",
     "pylint",
+    "coveralls",
 ]
 
 here = os.path.dirname(__file__)
