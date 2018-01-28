@@ -21,7 +21,7 @@ class MethodDispatcher(DispatchBase):
     def on_view_not_found(
             self, _,
             start_response: Callable[[str, List[Tuple[str, str]]], None],
-            ) -> Iterable[bytes]:
+        ) -> Iterable[bytes]:
         """ called when valid view is not found """
 
         start_response(
@@ -67,7 +67,7 @@ class ActionDispatcher(DispatchBase):
     def on_view_not_found(
             self, environ: Dict[str, Any],
             start_response: Callable[[str, List[Tuple[str, str]]], None],
-            ) -> Iterable[bytes]:
+        ) -> Iterable[bytes]:
         """ called when action is not found """
         start_response(
             "404 Not Found",
