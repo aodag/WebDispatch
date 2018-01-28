@@ -19,8 +19,8 @@ class URLMapper(object):
     """ find application matched url pattern.
     """
 
-    def __init__(self, converters: Dict[str, Callable] = None):
-        self.patterns = OrderedDict()
+    def __init__(self, converters: Dict[str, Callable] = None) -> None:
+        self.patterns = OrderedDict()  # type: Dict[str, URITemplate]
         self.converters = converters
 
     def add(self, name: str, pattern: str) -> None:
