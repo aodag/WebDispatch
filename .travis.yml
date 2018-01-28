@@ -1,13 +1,21 @@
+sudo: false
 language: python
 python:
+  - pypy
   - 3.4
   - 3.5
   - 3.6
 install:
-  - pip install -e .[testing] -c constraints.txt
+  - pip install tox-travis
 script:
-  - flake8 webdispatch
-  - pylint webdispatch
-  - py.test webdispatch --cov=webdispatch --cov-report=term-missing
+  - tox
+jobs:
+  include:
+    - python: 3.6
+      env: TOXENV=coverage
+    - python: 3.6
+      env: TOXENV=flake8
+    - python: 3.6
+      env: TOXENV=pylint
 after_success:
-  - if test "$TOXENV" = coverage ; then coveralls ; fi
+  - if test "$TOXENV" = coverage ; then pip install coveralls; coveralls ; fi
