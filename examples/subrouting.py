@@ -1,13 +1,16 @@
-from webdispatch import URLDispatcher
+from webdispatch.urldispatcher import URLDispatcher
 from webob.dec import wsgify
+
 
 @wsgify
 def handler(request):
     return request.url
 
+
 @wsgify
 def gen_handler(request):
     return request.environ['webdispatch.urlgenerator'].generate('sub_hello')
+
 
 app = URLDispatcher()
 app.add_url('top', '/', handler)
