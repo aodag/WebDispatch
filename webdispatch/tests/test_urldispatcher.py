@@ -60,12 +60,14 @@ class TestURLMapper(object):
 
     def test_lookup(self):
         """ test looking up basic usage """
+        from webdispatch.uritemplate import MatchResult
         target = self._make_one()
         target.add('testing-route', 'a')
         result = target.lookup('a')
-        compare(result, {'name': 'testing-route',
-                         'matchdict': {},
-                         'matchlength': 1})
+        compare(result, C(MatchResult,
+                          name='testing-route',
+                          matchdict={},
+                          matchlength=1))
 
     def test_generate(self):
         """ test generating url """

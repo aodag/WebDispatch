@@ -10,17 +10,20 @@ tests_require = [
     "python-coveralls",
     "flake8",
     "pylint",
+    "mypy",
 ]
 
 here = os.path.dirname(__file__)
 readme = None
 changes = None
 
+
 def _read(name):
     try:
         return open(os.path.join(here, name)).read()
-    except:
+    except Exception:
         return ""
+
 
 readme = _read("README.rst")
 changes = _read("CHANGES.txt")
@@ -39,7 +42,9 @@ setup(
     long_description=readme + "\n" + changes,
     test_suite="webdispatch",
     license="MIT",
-    install_requires=[],
+    install_requires=[
+        "typing; python_version < '3.5'",
+    ],
     tests_require=tests_require,
     extras_require={
         "testing": tests_require,
