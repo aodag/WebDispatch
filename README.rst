@@ -7,7 +7,7 @@ WebDispatch
 .. image:: https://coveralls.io/repos/aodag/WebDispatch/badge.png?branch=master 
    :target: https://coveralls.io/r/aodag/WebDispatch?branch=master 
 
-.. image:: https://pypip.in/wheel/WebDispatch/badge.png
+.. image:: https://img.shields.io/pypi/wheel/WebDispatch.svg
     :target: https://pypi.python.org/pypi/WebDispatch/
     :alt: Wheel Status
 
