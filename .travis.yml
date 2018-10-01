@@ -20,3 +20,4 @@ jobs:
       env: TOXENV=mypy
 after_success:
   - if test "$TOXENV" = coverage ; then pip install coveralls; coveralls ; fi
+  - if test "$TOXENV" = coverage ; then pip install codecov; codecov ; fi
