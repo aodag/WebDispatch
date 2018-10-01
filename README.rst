@@ -11,6 +11,9 @@ WebDispatch
     :target: https://pypi.python.org/pypi/WebDispatch/
     :alt: Wheel Status
 
+.. image:: https://codecov.io/gh/aodag/WebDispatch/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/aodag/WebDispatch
+
 WebDispatch is dispatcher collection for wsgi application. 
 That has no dependency to exsiting frameworks, but works fine with `WebOb <http://www.webob.org>`_.
 
