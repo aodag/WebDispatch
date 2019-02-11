@@ -3,7 +3,7 @@
 """
 from collections import OrderedDict
 from wsgiref.util import application_uri
-from typing import Any, Callable, Dict, List, Tuple, Iterable  # noqa
+from typing import Any, Callable, Dict, List, Optional, Tuple, Iterable  # noqa
 from .uritemplate import URITemplate, MatchResult
 from .base import DispatchBase
 
@@ -21,7 +21,7 @@ class URLMapper(object):
         """
         self.patterns[name] = URITemplate(pattern, converters=self.converters)
 
-    def lookup(self, path_info: str) -> MatchResult:
+    def lookup(self, path_info: str) -> Optional[MatchResult]:
         """ lookup url match for path_info
         """
         for name, pattern in self.patterns.items():
@@ -95,7 +95,7 @@ class URLDispatcher(DispatchBase):
             extra_environ=self.extra_environ,
         )
 
-    def detect_view_name(self, environ: Dict[str, Any]) -> str:
+    def detect_view_name(self, environ: Dict[str, Any]) -> Optional[str]:
         """ detect view name from environ """
         script_name = environ.get("SCRIPT_NAME", "")
         path_info = environ.get("PATH_INFO", "")

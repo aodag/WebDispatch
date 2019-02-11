@@ -5,7 +5,13 @@ parsing and generating url patterns
 from datetime import datetime
 import re
 import string
-from typing import Any, Dict, Callable, Tuple  # noqa pylint: disable=unused-import
+from typing import (
+    Any,
+    Dict,
+    Callable,
+    Optional,
+    Tuple,
+)  # noqa pylint: disable=unused-import
 
 VARS_PT = re.compile(
     r"{(?P<varname>[a-zA-Z0-9_]+)" r"(:(?P<converter>[a-zA-Z0-9_]+))?}", re.X
@@ -83,7 +89,7 @@ class MatchResult:
     """ result of parsing url """
 
     def __init__(self, matchdict: Dict[str, Any], matchlength: int) -> None:
-        self.name = None  # type: str
+        self.name = None  # type: Optional[str]
         self.matchdict = matchdict
         self.matchlength = matchlength
 
@@ -113,7 +119,7 @@ class URITemplate(object):
             converters = DEFAULT_CONVERTERS
         self.converters = detect_converters(tmpl_pattern, converters)
 
-    def match(self, path_info: str) -> MatchResult:
+    def match(self, path_info: str) -> Optional[MatchResult]:
         """ parse path_info and detect urlvars of url pattern """
         matched = self.regex.match(path_info)
         if matched is None:

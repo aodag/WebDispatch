@@ -1,6 +1,6 @@
 """ base dispatchers
 """
-from typing import Dict, Any, Callable, Iterable
+from typing import Dict, Any, Callable, Iterable, Optional
 
 
 class DispatchBase(object):
@@ -33,13 +33,15 @@ class DispatchBase(object):
 
             return dec
         self.applications[name] = app
-        return None
+        return app
 
     def get_extra_environ(self) -> Dict[str, Any]:
         """ returns for environ values for wsgi environ"""
         return self.extra_environ
 
-    def detect_view_name(self, environ: Dict[str, Any]) -> str:  # pragma: nocover
+    def detect_view_name(
+        self, environ: Dict[str, Any]
+    ) -> Optional[str]:  # pragma: nocover
         """ must returns view name for request """
         raise NotImplementedError()
 
