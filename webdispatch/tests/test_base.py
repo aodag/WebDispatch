@@ -10,6 +10,7 @@ class TestDispatchBase(object):
     def _get_target():
         """ get class under test """
         from webdispatch.base import DispatchBase
+
         return DispatchBase
 
     def _make_one(self, *args, **kwargs):
@@ -28,19 +29,19 @@ class TestDispatchBase(object):
         """ init with app and no environ"""
 
         testing_app = object()
-        result = self._make_one(applications={'testing': testing_app})
+        result = self._make_one(applications={"testing": testing_app})
 
-        compare(result.applications, {'testing': testing_app})
+        compare(result.applications, {"testing": testing_app})
         compare(result.extra_environ, {})
 
     def test_init_env(self):
         """ init with app and no environ"""
 
-        environ = {'test_value': 1}
+        environ = {"test_value": 1}
         result = self._make_one(extra_environ=environ)
 
         compare(result.applications, {})
-        compare(result.extra_environ, {'test_value': 1})
+        compare(result.extra_environ, {"test_value": 1})
 
     def test_not_found(self):
         """ init with app and no environ"""

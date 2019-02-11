@@ -9,6 +9,7 @@ from .base import DispatchBase
 class MethodDispatcher(DispatchBase):
     """ dispatch applications with request method.
     """
+
     def __init__(self, **kwargs) -> None:
         super(MethodDispatcher, self).__init__()
         for name, app in kwargs.items():
@@ -16,17 +17,14 @@ class MethodDispatcher(DispatchBase):
 
     def detect_view_name(self, environ: Dict[str, Any]) -> str:
         """ convert request method to view name """
-        return environ['REQUEST_METHOD'].lower()
+        return environ["REQUEST_METHOD"].lower()
 
     def on_view_not_found(
-            self, _,
-            start_response: Callable[[str, List[Tuple[str, str]]], None],
+        self, _, start_response: Callable[[str, List[Tuple[str, str]]], None]
     ) -> Iterable[bytes]:
         """ called when valid view is not found """
 
-        start_response(
-            "405 Method Not Allowed",
-            [('Content-type', 'text/plain')])
+        start_response("405 Method Not Allowed", [("Content-type", "text/plain")])
         return [b"Method Not Allowed"]
 
 
@@ -41,35 +39,35 @@ def action_handler_adapter(handler_cls: type, action_name: str) -> Callable:
         """ inner app """
         handler = handler_cls()
         return getattr(handler, action_name)(environ, start_response)
+
     return wsgiapp
 
 
 class ActionDispatcher(DispatchBase):
     """ wsgi application dispatching actions to registered classes"""
 
-    def __init__(self, action_var_name: str = 'action') -> None:
+    def __init__(self, action_var_name: str = "action") -> None:
         super(ActionDispatcher, self).__init__()
         self.action_var_name = action_var_name
 
     def register_actionhandler(self, action_handler: type) -> None:
         """ register class as action handler """
         for k in action_handler.__dict__:
-            if k.startswith('_'):
+            if k.startswith("_"):
                 continue
             app = action_handler_adapter(action_handler, k)
             self.register_app(k, app)
 
     def detect_view_name(self, environ: Dict[str, Any]) -> str:
         """ get view name from routing args """
-        urlvars = environ.get('wsgiorg.routing_args', [(), {}])[1]
+        urlvars = environ.get("wsgiorg.routing_args", [(), {}])[1]
         return urlvars.get(self.action_var_name)
 
     def on_view_not_found(
-            self, environ: Dict[str, Any],
-            start_response: Callable[[str, List[Tuple[str, str]]], None],
+        self,
+        environ: Dict[str, Any],
+        start_response: Callable[[str, List[Tuple[str, str]]], None],
     ) -> Iterable[bytes]:
         """ called when action is not found """
-        start_response(
-            "404 Not Found",
-            [('Content-type', 'text/plain')])
-        return [b"Not Found ", application_uri(environ).encode('utf-8')]
+        start_response("404 Not Found", [("Content-type", "text/plain")])
+        return [b"Not Found ", application_uri(environ).encode("utf-8")]

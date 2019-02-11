@@ -9,10 +9,12 @@ from webdispatch.testing import setup_environ
 
 class TestURLMapper(object):
     """ tests for webdispatch.urldispatcher.URLMapper """
+
     @staticmethod
     def _get_target():
         """ get class under test """
         from webdispatch.urldispatcher import URLMapper
+
         return URLMapper
 
     def _make_one(self, *args, **kwargs):
@@ -21,69 +23,74 @@ class TestURLMapper(object):
 
     def test_init(self):
         """ test create object """
-        converters = {
-            'int': int,
-            'str': str,
-            'float': float,
-        }
+        converters = {"int": int, "str": str, "float": float}
         target = self._make_one(converters)
 
-        compare(target, C(self._get_target(),
-                          patterns=collections.OrderedDict(),
-                          converters=converters))
+        compare(
+            target,
+            C(
+                self._get_target(),
+                patterns=collections.OrderedDict(),
+                converters=converters,
+            ),
+        )
 
     def test_add(self):
         """ test add url """
         from webdispatch.uritemplate import URITemplate
-        converters = {
-            'int': int,
-            'str': str,
-            'float': float,
-        }
-        pattern = '/{v1}/{v2:int}'
+
+        converters = {"int": int, "str": str, "float": float}
+        pattern = "/{v1}/{v2:int}"
 
         target = self._make_one(converters)
-        target.add('testing-route', pattern)
+        target.add("testing-route", pattern)
 
-        compare(target.patterns,
-                {'testing-route': C(URITemplate,
-                                    converters={'v1': str,
-                                                'v2': int},
-                                    pattern=pattern,
-                                    strict=False)})
+        compare(
+            target.patterns,
+            {
+                "testing-route": C(
+                    URITemplate,
+                    converters={"v1": str, "v2": int},
+                    pattern=pattern,
+                    strict=False,
+                )
+            },
+        )
 
     def test_lookup_none(self):
         """ test looking up route no registered routes"""
         target = self._make_one()
-        result = target.lookup('a')
+        result = target.lookup("a")
         compare(result, None)
 
     def test_lookup(self):
         """ test looking up basic usage """
         from webdispatch.uritemplate import MatchResult
+
         target = self._make_one()
-        target.add('testing-route', 'a')
-        result = target.lookup('a')
-        compare(result, C(MatchResult,
-                          name='testing-route',
-                          matchdict={},
-                          matchlength=1))
+        target.add("testing-route", "a")
+        result = target.lookup("a")
+        compare(
+            result, C(MatchResult, name="testing-route", matchdict={}, matchlength=1)
+        )
 
     def test_generate(self):
         """ test generating url """
         target = self._make_one()
-        target.add('testing-route', 'a/{v1}')
+        target.add("testing-route", "a/{v1}")
 
-        result = target.generate('testing-route', v1='b')
-        compare(result, 'a/b')
+        result = target.generate("testing-route", v1="b")
+        compare(result, "a/b")
 
 
 class TestURLGenerator(object):
     """ test for webdispatch.urldispatcher.URLGenerator """
+
     @staticmethod
     def _get_target():
         """ get class under test """
         from webdispatch.urldispatcher import URLGenerator
+
         return URLGenerator
 
     def _make_one(self, *args, **kwargs):
@@ -98,26 +105,28 @@ class TestURLGenerator(object):
 
         compare(target.environ, environ)
         compare(target.urlmapper, urlmapper)
-        compare(target.application_uri, 'http://127.0.0.1/')
+        compare(target.application_uri, "http://127.0.0.1/")
 
     def test_generate(self):
         """ test generating url """
         environ = setup_environ()
         urlmapper = mock.Mock()
-        urlmapper.generate.return_value = 'testing-route-url'
+        urlmapper.generate.return_value = "testing-route-url"
         target = self._make_one(environ, urlmapper)
 
-        result = target.generate('testing-route', v1="a")
+        result = target.generate("testing-route", v1="a")
 
-        compare(result, 'http://127.0.0.1/testing-route-url')
+        compare(result, "http://127.0.0.1/testing-route-url")
 
 
 class TestURLDispatcher(object):
     """ tests for webdispatch.urldispatcher.URLDispatcher """
+
     @staticmethod
     def _get_target():
         """ get class under test """
         from webdispatch.urldispatcher import URLDispatcher
+
         return URLDispatcher
 
     def _make_one(self, *args, **kwargs):
@@ -141,22 +150,26 @@ class TestURLDispatcher(object):
         mapper = mock.Mock()
         target = self._make_one(urlmapper=mapper)
         app = object()
-        target.add_url('testing-route', 'a/b', app)
+        target.add_url("testing-route", "a/b", app)
 
-        mapper.add.assert_called_with('testing-route', 'a/b')
+        mapper.add.assert_called_with("testing-route", "a/b")
 
     def test_subroute(self):
         """ test subroute """
         mapper = object()
-        target = self._make_one(urlmapper=mapper,
-                                extra_environ={'testing': 'e'})
-        result = target.add_subroute('prefix/a/b')
+        target = self._make_one(urlmapper=mapper, extra_environ={"testing": "e"})
+        result = target.add_subroute("prefix/a/b")
 
-        compare(result, C(self._get_target(),
-                          urlmapper=mapper,
-                          prefix='prefix/a/b',
-                          applications={},
-                          extra_environ={'testing': 'e'}))
+        compare(
+            result,
+            C(
+                self._get_target(),
+                urlmapper=mapper,
+                prefix="prefix/a/b",
+                applications={},
+                extra_environ={"testing": "e"},
+            ),
+        )
 
     def test_detect_view_name(self):
         """ test detect_view_name """
@@ -173,6 +186,7 @@ class TestURLDispatcher(object):
         start_response = mock.Mock()
         result = target(environ, start_response)
 
-        compare(result, [b'Not found'])
+        compare(result, [b"Not found"])
         start_response.assert_called_with(
-            '404 Not Found', [('Content-type', 'text/plain')])
+            "404 Not Found", [("Content-type", "text/plain")]
+        )

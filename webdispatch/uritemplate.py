@@ -5,16 +5,11 @@ parsing and generating url patterns
 from datetime import datetime
 import re
 import string
-from typing import (  # noqa pylint: disable=unused-import
-    Any,
-    Dict,
-    Callable,
-    Tuple,
-)
+from typing import Any, Dict, Callable, Tuple  # noqa pylint: disable=unused-import
 
-VARS_PT = re.compile(r"{(?P<varname>[a-zA-Z0-9_]+)"
-                     r"(:(?P<converter>[a-zA-Z0-9_]+))?}",
-                     re.X)
+VARS_PT = re.compile(
+    r"{(?P<varname>[a-zA-Z0-9_]+)" r"(:(?P<converter>[a-zA-Z0-9_]+))?}", re.X
+)
 META_CHARS = (
     "\\",
     ".",
@@ -27,25 +22,26 @@ META_CHARS = (
     "(",
     ")",
     "[",
-    "]")  # type: Tuple[str, ...]
+    "]",
+)  # type: Tuple[str, ...]
 
 DEFAULT_CONVERTERS = {
-    'int': int,
-    'date': lambda s: datetime.strptime(s, '%Y-%m-%d'),
-    'date_ym': lambda s: datetime.strptime(s, '%Y-%m'),
+    "int": int,
+    "date": lambda s: datetime.strptime(s, "%Y-%m-%d"),
+    "date_ym": lambda s: datetime.strptime(s, "%Y-%m"),
 }  # type: Dict[str, Callable]
 
 
 def regex_replacer(matched) -> str:
     """ replace url placeholder to regex pattern"""
     values = matched.groupdict()
-    return "(?P<" + values['varname'] + r">[\w-]+)"
+    return "(?P<" + values["varname"] + r">[\w-]+)"
 
 
 def template_replacer(matched) -> str:
     """ replace url placeholder to template interpolation"""
     values = matched.groupdict()
-    return "${" + values['varname'] + "}"
+    return "${" + values["varname"] + "}"
 
 
 def pattern_to_regex(pattern: str) -> str:
@@ -66,15 +62,15 @@ def pattern_to_template(pattern: str) -> str:
     return VARS_PT.sub(template_replacer, pattern)
 
 
-def detect_converters(pattern: str,
-                      converter_dict: Dict[str, Callable],
-                      default: Callable = str):
+def detect_converters(
+    pattern: str, converter_dict: Dict[str, Callable], default: Callable = str
+):
     """ detect pairs of varname and converter from pattern"""
     converters = {}
     for matched in VARS_PT.finditer(pattern):
         matchdict = matched.groupdict()
-        varname = matchdict['varname']
-        converter = matchdict['converter']
+        varname = matchdict["varname"]
+        converter = matchdict["converter"]
         converters[varname] = converter_dict.get(converter, default)
     return converters
 
@@ -85,6 +81,7 @@ class URITemplateFormatException(Exception):
 
 class MatchResult:
     """ result of parsing url """
+
     def __init__(self, matchdict: Dict[str, Any], matchlength: int) -> None:
         self.name = None  # type: str
         self.matchdict = matchdict
@@ -98,24 +95,22 @@ class MatchResult:
 
     def split_path_info(self, path_info: str) -> Tuple[str, str]:
         """ split path_info to new script_name and new path_info"""
-        return path_info[:self.matchlength], path_info[self.matchlength:]
+        return path_info[: self.matchlength], path_info[self.matchlength :]
 
 
 class URITemplate(object):
     """ parsing and generating url with patterned """
 
-    def __init__(self, tmpl_pattern: str,
-                 converters=None) -> None:
-        if tmpl_pattern.endswith('*') and not tmpl_pattern.endswith('/*'):
-            raise URITemplateFormatException('wildcard must be after slash.')
+    def __init__(self, tmpl_pattern: str, converters=None) -> None:
+        if tmpl_pattern.endswith("*") and not tmpl_pattern.endswith("/*"):
+            raise URITemplateFormatException("wildcard must be after slash.")
 
         self.pattern = tmpl_pattern
         self.regex = re.compile(pattern_to_regex(tmpl_pattern))
         self.template = string.Template(pattern_to_template(tmpl_pattern))
         if converters is None:
             converters = DEFAULT_CONVERTERS
-        self.converters = detect_converters(
-            tmpl_pattern, converters)
+        self.converters = detect_converters(tmpl_pattern, converters)
 
     def match(self, path_info: str) -> MatchResult:
         """ parse path_info and detect urlvars of url pattern """
@@ -130,8 +125,7 @@ class URITemplate(object):
         except ValueError:
             return None
 
-        return MatchResult(matchdict,
-                           matchlength)
+        return MatchResult(matchdict, matchlength)
 
     def convert_values(self, matchdict: Dict[str, str]) -> Dict[str, Any]:
         """ convert values of ``matchdict``

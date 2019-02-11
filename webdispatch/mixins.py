@@ -7,6 +7,7 @@ from .urldispatcher import URLGenerator
 class URLMapperMixin(object):
     """ mixin to add :meth:`generate_url` method.
     """
+
     environ = {}  # type: Dict[str, Any]
 
     def generate_url(self, name: str, **kwargs) -> str:
@@ -16,4 +17,4 @@ class URLMapperMixin(object):
     @property
     def urlmapper(self) -> URLGenerator:
         """ get urlmapper object from wsgi environ """
-        return self.environ['webdispatch.urlgenerator']
+        return self.environ["webdispatch.urlgenerator"]

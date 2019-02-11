@@ -6,9 +6,7 @@ from .urldispatcher import URLDispatcher
 
 def make_urldispatch_application(_, **settings):
     """ paste.app_factory interface for URLDispatcher"""
-    patterns = [p.split("=", 1)
-                for p in settings['patterns'].split('\n')
-                if p]
+    patterns = [p.split("=", 1) for p in settings["patterns"].split("\n") if p]
     application = URLDispatcher()
 
     for pattern, app in patterns:

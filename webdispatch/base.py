@@ -7,9 +7,10 @@ class DispatchBase(object):
     """ Base class for dispatcher application"""
 
     def __init__(
-            self,
-            applications: Dict[str, Callable] = None,
-            extra_environ: Dict[str, Any] = None) -> None:
+        self,
+        applications: Dict[str, Callable] = None,
+        extra_environ: Dict[str, Any] = None,
+    ) -> None:
 
         if applications is None:
             self.applications = {}  # type: Dict[str, Callable]
@@ -23,11 +24,13 @@ class DispatchBase(object):
     def register_app(self, name: str, app: Callable = None) -> Callable:
         """ register dispatchable wsgi application"""
         if app is None:
+
             def dec(app):
                 """ inner decorator for register app """
                 assert app is not None
                 self.register_app(name, app)
                 return app
+
             return dec
         self.applications[name] = app
         return None
@@ -36,21 +39,19 @@ class DispatchBase(object):
         """ returns for environ values for wsgi environ"""
         return self.extra_environ
 
-    def detect_view_name(
-            self, environ: Dict[str, Any]) -> str:  # pragma: nocover
+    def detect_view_name(self, environ: Dict[str, Any]) -> str:  # pragma: nocover
         """ must returns view name for request """
         raise NotImplementedError()
 
     def on_view_not_found(
-            self,
-            environ: Dict[str, Any],
-            start_response: Callable) -> Iterable[bytes]:  # pragma: nocover
+        self, environ: Dict[str, Any], start_response: Callable
+    ) -> Iterable[bytes]:  # pragma: nocover
         """ called when view is not found"""
         raise NotImplementedError()
 
-    def __call__(self,
-                 environ: Dict[str, Any],
-                 start_response: Callable) -> Iterable[bytes]:
+    def __call__(
+        self, environ: Dict[str, Any], start_response: Callable
+    ) -> Iterable[bytes]:
         extra_environ = self.get_extra_environ()
         environ.update(extra_environ)
         view_name = self.detect_view_name(environ)

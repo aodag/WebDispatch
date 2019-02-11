@@ -6,6 +6,7 @@ from webdispatch import testing
 
 class TestPaste(object):
     """ test for webdispatch.paster.make_urldispatch_application """
+
     @staticmethod
     def _make_env(path_info, script_name):
         """ make basic wsgi environ """
@@ -15,11 +16,12 @@ class TestPaste(object):
     def _call_fut(*args, **kwargs):
         """ call function under test """
         from webdispatch.paster import make_urldispatch_application
+
         return make_urldispatch_application(*args, **kwargs)
 
     def assert_response_body(self, app, path, expected):
         """ assert body created app on path equals expected"""
-        environ = self._make_env(path, '')
+        environ = self._make_env(path, "")
         start_response = mock.Mock()
         result = app(environ, start_response)
         compare(result, expected)
@@ -32,5 +34,5 @@ class TestPaste(object):
         /bye = webdispatch.dummyapps:bye"""
 
         application = self._call_fut(global_conf, patterns=patterns)
-        self.assert_response_body(application, '/', [b'Hello'])
-        self.assert_response_body(application, '/bye', [b'bye'])
+        self.assert_response_body(application, "/", [b"Hello"])
+        self.assert_response_body(application, "/bye", [b"bye"])

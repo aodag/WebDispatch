@@ -3,14 +3,7 @@
 """
 from collections import OrderedDict
 from wsgiref.util import application_uri
-from typing import (  # noqa
-    Any,
-    Callable,
-    Dict,
-    List,
-    Tuple,
-    Iterable,
-)
+from typing import Any, Callable, Dict, List, Tuple, Iterable  # noqa
 from .uritemplate import URITemplate, MatchResult
 from .base import DispatchBase
 
@@ -26,8 +19,7 @@ class URLMapper(object):
     def add(self, name: str, pattern: str) -> None:
         """ add url pattern for name
         """
-        self.patterns[name] = URITemplate(
-            pattern, converters=self.converters)
+        self.patterns[name] = URITemplate(pattern, converters=self.converters)
 
     def lookup(self, path_info: str) -> MatchResult:
         """ lookup url match for path_info
@@ -64,23 +56,25 @@ class URLGenerator(object):
 
     def make_full_qualified_url(self, path: str) -> str:
         """ append application url to path"""
-        return self.application_uri.rstrip('/') + '/' + path.lstrip('/')
+        return self.application_uri.rstrip("/") + "/" + path.lstrip("/")
 
 
 class URLDispatcher(DispatchBase):
     """ dispatch applications with url patterns.
     """
 
-    def __init__(self,
-                 *,
-                 applications: Dict[str, Callable] = None,
-                 extra_environ: Dict[str, Any] = None,
-                 converters: Dict[str, Callable] = None,
-                 urlmapper: URLMapper = None,
-                 prefix: str = "") -> None:
+    def __init__(
+        self,
+        *,
+        applications: Dict[str, Callable] = None,
+        extra_environ: Dict[str, Any] = None,
+        converters: Dict[str, Callable] = None,
+        urlmapper: URLMapper = None,
+        prefix: str = ""
+    ) -> None:
         super(URLDispatcher, self).__init__(
-            applications=applications,
-            extra_environ=extra_environ)
+            applications=applications, extra_environ=extra_environ
+        )
         if urlmapper:
             self.urlmapper = urlmapper
         else:
@@ -98,12 +92,13 @@ class URLDispatcher(DispatchBase):
             urlmapper=self.urlmapper,
             prefix=self.prefix + pattern,
             applications=self.applications,
-            extra_environ=self.extra_environ)
+            extra_environ=self.extra_environ,
+        )
 
     def detect_view_name(self, environ: Dict[str, Any]) -> str:
         """ detect view name from environ """
-        script_name = environ.get('SCRIPT_NAME', '')
-        path_info = environ.get('PATH_INFO', '')
+        script_name = environ.get("SCRIPT_NAME", "")
+        path_info = environ.get("PATH_INFO", "")
         match = self.urlmapper.lookup(path_info)
         if match is None:
             return None
@@ -112,24 +107,24 @@ class URLDispatcher(DispatchBase):
         extra_path_info = splited[1]
         pos_args = []  # type: List[str]
 
-        routing_args = environ.get('wsgiorg.routing_args', ((), {}))
+        routing_args = environ.get("wsgiorg.routing_args", ((), {}))
         (cur_pos, cur_named) = routing_args
         new_pos = list(cur_pos) + list(pos_args)
         new_named = match.new_named_args(cur_named)
-        environ['wsgiorg.routing_args'] = (new_pos, new_named)
-        environ['webdispatch.urlmapper'] = self.urlmapper
+        environ["wsgiorg.routing_args"] = (new_pos, new_named)
+        environ["webdispatch.urlmapper"] = self.urlmapper
         urlgenerator = URLGenerator(environ, self.urlmapper)
-        environ['webdispatch.urlgenerator'] = urlgenerator
-        environ['SCRIPT_NAME'] = script_name + splited[0]
-        environ['PATH_INFO'] = extra_path_info
+        environ["webdispatch.urlgenerator"] = urlgenerator
+        environ["SCRIPT_NAME"] = script_name + splited[0]
+        environ["PATH_INFO"] = extra_path_info
 
         return match.name
 
     def on_view_not_found(
-            self,
-            environ: Dict[str, Any],
-            start_response: Callable[[str, List[Tuple[str, str]]], None],
+        self,
+        environ: Dict[str, Any],
+        start_response: Callable[[str, List[Tuple[str, str]]], None],
     ) -> Iterable[bytes]:
         """ called when views not found"""
-        start_response('404 Not Found', [('Content-type', 'text/plain')])
-        return [b'Not found']
+        start_response("404 Not Found", [("Content-type", "text/plain")])
+        return [b"Not found"]
