@@ -95,7 +95,8 @@ class MatchResult:
 
     def split_path_info(self, path_info: str) -> Tuple[str, str]:
         """ split path_info to new script_name and new path_info"""
-        return path_info[: self.matchlength], path_info[self.matchlength :]
+        matchlength = self.matchlength
+        return path_info[:matchlength], path_info[matchlength:]
 
 
 class URITemplate(object):
